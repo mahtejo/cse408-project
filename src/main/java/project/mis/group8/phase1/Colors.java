@@ -102,6 +102,14 @@ public class Colors {
 		return channel;
 	}
 
+	static double colorFromScale(double x_scaled, double one, double two, int min, int max) {
+		double cnx_range = (two - one);
+		double x_std = (x_scaled - min) / (max - min);
+		double num = cnx_range * x_std;
+		double i = num + one;
+		return i;
+	}
+
 	static HashMap<Integer, Double> calculateChannelBucket(double c, double l, int buckets, HashMap<Double, Double> channel, HashMap<Integer, Double> channelBucket) {
 		Double i = new Double(c);
 		int counter = 0;
@@ -181,24 +189,53 @@ public class Colors {
 	private static void generateColorSets(HashMap<Integer, Double> xChannelBucket, HashMap<Integer, Double> yChannelBucket, HashMap<Integer, Double> zChannelBucket) {
 		System.out.println("Color Sets: ");
 		StringBuffer b = new StringBuffer();
+		StringBuffer colors = new StringBuffer();
 		int color_id = 0;
 		for (int i = 0; i < xChannelBucket.size(); i++) {
 			double x = xChannelBucket.get(i);
+			double xcolor;
+			if (x > 0) {
+				xcolor = colorFromScale(x, two.x, three.x, 0, 1);
+			} else {
+				xcolor = colorFromScale(x, one.x, two.x, -1, 0);
+			}
 			for (int j = 0; j < yChannelBucket.size(); j++) {
-				double y = xChannelBucket.get(j);
+				double y = yChannelBucket.get(j);
+				double ycolor;
+				if (x > 0) {
+					ycolor = colorFromScale(y, two.y, three.y, 0, 1);
+				} else {
+					ycolor = colorFromScale(y, one.y, two.y, -1, 0);
+				}
 				for (int k = 0; k < zChannelBucket.size(); k++) {
 					double z = zChannelBucket.get(k);
-					System.out.println("colorID: " + color_id + "     " + x + " " + y + " " + z);
+					double zcolor;
+					if (x > 0) {
+						zcolor = colorFromScale(z, two.z, three.z, 0, 1);
+					} else {
+						zcolor = colorFromScale(z, one.z, two.z, -1, 0);
+					}
 					b.append("colorID: " + color_id + "     " + x + " " + y + " " + z + "\r\n");
+					colors.append("ColorID: " + color_id + "	" + xcolor + "  " + ycolor + "  " + zcolor + "\r\n");
+					System.out.println("ColorID: " + color_id + "	" + xcolor + "  " + ycolor + "  " + zcolor);
 					color_id++;
 				}
 			}
 		}
-		File cMap = new File("colorMap/rgb_" + System.currentTimeMillis()+".txt");
-		if(!cMap.exists()){
+		File cMap = new File("colorMap/rgb_" + System.currentTimeMillis() + ".txt");
+		File colorsMap = new File("colorMap/rgb_colors_" + System.currentTimeMillis() + ".txt");
+		if (!cMap.exists()) {
 			try {
 				cMap.createNewFile();
 				System.out.println("Created file");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		if (!colorsMap.exists()) {
+			try {
+				cMap.createNewFile();
+				System.out.println("Created colors file");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -208,6 +245,11 @@ public class Colors {
 			bWriter = new BufferedWriter(new FileWriter(cMap));
 			bWriter.write(b.toString());
 			bWriter.flush();
+
+			bWriter = new BufferedWriter(new FileWriter(colorsMap));
+			bWriter.write(colors.toString());
+			bWriter.flush();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
