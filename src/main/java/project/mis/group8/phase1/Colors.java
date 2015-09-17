@@ -1,6 +1,9 @@
 package project.mis.group8.phase1;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,7 +28,7 @@ import org.bytedeco.javacv.OpenCVFrameConverter;
 
 public class Colors {
 
-	public static int NUMBER_OF_BITS = 10;
+	public static int NUMBER_OF_BITS = 9;
 	public static ColorMap COLOR_MAP;
 	public static ColorInstance one;
 	public static ColorInstance two;
@@ -99,8 +102,6 @@ public class Colors {
 		return channel;
 	}
 
-
-
 	static HashMap<Integer, Double> calculateChannelBucket(double c, double l, int buckets, HashMap<Double, Double> channel, HashMap<Integer, Double> channelBucket) {
 		Double i = new Double(c);
 		int counter = 0;
@@ -164,6 +165,7 @@ public class Colors {
 			System.out.println("Z Color Channel: ");
 			printMap(zChannelBucket);
 
+			generateColorSets(xChannelBucket, yChannelBucket, zChannelBucket);
 		}
 		default:
 			break;
@@ -171,11 +173,59 @@ public class Colors {
 
 	}
 
+	/**
+	 * @param xChannelBucket
+	 * @param yChannelBucket
+	 * @param zChannelBucket
+	 */
+	private static void generateColorSets(HashMap<Integer, Double> xChannelBucket, HashMap<Integer, Double> yChannelBucket, HashMap<Integer, Double> zChannelBucket) {
+		System.out.println("Color Sets: ");
+		StringBuffer b = new StringBuffer();
+		int color_id = 0;
+		for (int i = 0; i < xChannelBucket.size(); i++) {
+			double x = xChannelBucket.get(i);
+			for (int j = 0; j < yChannelBucket.size(); j++) {
+				double y = xChannelBucket.get(j);
+				for (int k = 0; k < zChannelBucket.size(); k++) {
+					double z = zChannelBucket.get(k);
+					System.out.println("colorID: " + color_id + "     " + x + " " + y + " " + z);
+					b.append("colorID: " + color_id + "     " + x + " " + y + " " + z + "\r\n");
+					color_id++;
+				}
+			}
+		}
+		File cMap = new File("colorMap/rgb_" + System.currentTimeMillis()+".txt");
+		if(!cMap.exists()){
+			try {
+				cMap.createNewFile();
+				System.out.println("Created file");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		BufferedWriter bWriter = null;
+		try {
+			bWriter = new BufferedWriter(new FileWriter(cMap));
+			bWriter.write(b.toString());
+			bWriter.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (bWriter != null)
+				try {
+					bWriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+	}
+
 	static void printMap(Map<?, ?> map) {
 		for (Entry e : map.entrySet()) {
 			System.out.println(e.getKey() + " " + e.getValue());
 		}
 	}
+
 	static void splitBitsByColorChannel(COLOR_MODEL colorModel) {
 
 		int eachChannelBits = NUMBER_OF_BITS / 3;
@@ -193,7 +243,7 @@ public class Colors {
 		COLOR_MAP.y_buckets = (int) (Math.pow(2, colorModel.getYbits()) / boxWidthY);
 		COLOR_MAP.z_buckets = (int) (Math.pow(2, colorModel.getZbits()) / boxWidthZ);
 	}
-	
+
 	class ColorInstance {
 		int x;
 		int y;
