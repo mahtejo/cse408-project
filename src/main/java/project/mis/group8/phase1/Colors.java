@@ -16,11 +16,17 @@ import static org.bytedeco.javacpp.opencv_highgui.*;
 import static org.bytedeco.javacpp.opencv_imgcodecs.*;
 import static org.bytedeco.javacpp.opencv_calib3d.*;
 import static org.bytedeco.javacpp.opencv_objdetect.*;
+import static org.bytedeco.javacpp.opencv_videoio.cvCaptureFromFile;
 
+import org.bytedeco.javacpp.FlyCapture2.Image;
 import org.bytedeco.javacpp.opencv_core.IplImage;
+import org.bytedeco.javacpp.opencv_videoio.VideoCapture;
 import org.bytedeco.javacv.CanvasFrame;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.OpenCVFrameConverter;
+import org.bytedeco.javacv.OpenCVFrameGrabber;
 
 /**
  * @author kvivekanandan Sep 11, 2015 Test.java
@@ -28,14 +34,14 @@ import org.bytedeco.javacv.OpenCVFrameConverter;
 
 public class Colors {
 
-	public static int NUMBER_OF_BITS = 9;
+	public static int NUMBER_OF_BITS = 4;
 	public static ColorMap COLOR_MAP;
 	public static ColorInstance one;
 	public static ColorInstance two;
 	public static ColorInstance three;
 
 	enum COLOR_MODEL {
-		RGB(8, 8, 8), XYZ(8, 8, 8), YUV(8, 4, 4), YCbCr(8, 4, 4), YIQ(1, 1, 1), HSL(1, 1, 1);
+		RGB(8, 8, 8), XYZ(8, 8, 8), YUV(8, 4, 4), YCbCr(8, 2, 4), YIQ(8, 4, 2), HSL(1, 1, 1);
 		COLOR_MODEL(int xbits, int ybits, int zbits) {
 			this.x_bits = xbits;
 			this.y_bits = ybits;
@@ -60,32 +66,83 @@ public class Colors {
 	}
 
 	public static void main(String args[]) {
-		// captureFrame();
-		Colors t = new Colors();
-		COLOR_MAP = new ColorMap();
-		one = t.new ColorInstance(134, 34, 123);
-		two = t.new ColorInstance(180, 60, 155);
-		three = t.new ColorInstance(230, 90, 200);
-		colorMap(COLOR_MODEL.RGB, one, two, three, NUMBER_OF_BITS);
+		captureFrame();
+
+		 Colors t = new Colors();
+		 COLOR_MAP = new ColorMap();
+		 one = t.new ColorInstance(134, 34, 123);
+		 two = t.new ColorInstance(180, 60, 155);
+		 three = t.new ColorInstance(230, 90, 200);
+
+		// one = t.new ColorInstance(0, 0, 0);
+		// two = t.new ColorInstance(50, 50, 50);
+		// three = t.new ColorInstance(100, 100, 100);
+
+		 colorMap(COLOR_MODEL.RGB, one, two, three, NUMBER_OF_BITS);
 	}
 
 	static void captureFrame() {
-		FFmpegFrameGrabber frameGrabber = new FFmpegFrameGrabber("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/1.mp4");
+		FrameGrabber frameGrabber = new OpenCVFrameGrabber("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/1.mp4");
 
 		try {
 			frameGrabber.start();
 			OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
-			IplImage grabbedImage = converter.convert(frameGrabber.grab());
-			CanvasFrame canvas = new CanvasFrame("Web Cam");
-			canvas.showImage(frameGrabber.grab());
-			// cvSaveImage(new
-			// File("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/Img.png"),
-			// grabbedImage);
-			// ImageIO.write(,"png", new
-			// File("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/Img.png"));
-
+			frameGrabber.setFrameRate(30);
+			int length = frameGrabber.getLengthInFrames();
+			int frame_one = 8;
+			int frame_two = 220;
+			Frame f;
+			Frame f1 = null;
+			Frame f2 = null;
+			Frame g1, g2;
+			CanvasFrame canvas = null;
+			while ((f = frameGrabber.grab()) != null) {
+				if (frameGrabber.getFrameNumber() == frame_one ) {
+					f1 = f;
+					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
+					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+					canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
+					canvas.showImage(f);
+					
+				} else if(frameGrabber.getFrameNumber() == frame_two){
+					f2 = f;
+					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
+					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+					canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
+					canvas.showImage(f);
+					break;
+				}
+			}
+			
 			frameGrabber.stop();
-
+			Mat mf1 = converter.convertToMat(f1);
+			Mat mf2 = converter.convertToMat(f2);
+			Mat mg1 = new Mat(); Mat mg2 = 	new Mat();
+			cvtColor(mf1,mg1,COLOR_BGR2GRAY);
+			Frame gray = converter.convert(mg1);
+			canvas.showImage(gray);
+			
+			cvtColor(mf2,mg2,COLOR_BGR2GRAY);
+			Frame gray2 = converter.convert(mg2);
+			canvas.showImage(gray2);
+			
+			IplImage diffGray = IplImage.create(converter.convert(gray).width(), converter.convert(gray).height(), IPL_DEPTH_8U, 1);
+			IplImage iplGray = converter.convertToIplImage(gray);
+			IplImage iplGray2 = converter.convertToIplImage(gray2);
+			
+			cvAbsDiff(iplGray, iplGray2, diffGray);
+			
+			CanvasFrame s = new CanvasFrame("" + frameGrabber.getFrameNumber());
+			s.showImage(converter.convert(diffGray));
+			Mat diffMatGray = converter.convertToMat(converter.convert(diffGray));
+			Mat diffDestGray = new Mat();
+			applyColorMap(diffMatGray, diffDestGray, COLORMAP_SPRING);
+			
+			Frame finalColorMapDiff = converter.convert(diffDestGray);
+			s.showImage(finalColorMapDiff);
+			canvas.dispose();
+			s.dispose();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
