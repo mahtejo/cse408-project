@@ -54,6 +54,7 @@ public class Colors {
 		Colors t = new Colors();
 		COLOR_MAP = new ColorMap();
 		ConvertColors converter = new ConvertColors();
+		
 		// input format cmd args: colormodel b x,y,z x,y,z x,y,z
 		
 		if(args!=null && args.length == 5){
@@ -114,10 +115,6 @@ public class Colors {
 				 three = t.new ColorInstance(arr3[0], arr3[1],arr3[2]);
 				 colorModel = COLOR_MODEL.RGB;
 			}
-			
-			
-			
-
 		}else{
 			System.out.println("Incorrect input parameters, continuing with default values:");
 			colorModel = COLOR_MODEL.RGB;
@@ -130,6 +127,7 @@ public class Colors {
 		printColorModel();
 		printNumberOfBits();
 
+		/* will generate color map and color scale */
 		colorMap(COLOR_MODEL.RGB, one, two, three, NUMBER_OF_BITS);
 		
 	}
@@ -147,73 +145,7 @@ public class Colors {
 	static void printNumberOfBits(){
 		System.out.println("Number of bits for color map: " + NUMBER_OF_BITS);
 	}
-//	static void captureFrame() {
-//		FrameGrabber frameGrabber = new OpenCVFrameGrabber("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/1.mp4");
-//
-//		try {
-//			frameGrabber.start();
-//			OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
-//			frameGrabber.setFrameRate(30);
-//			int length = frameGrabber.getLengthInFrames();
-//			int frame_one = 8;
-//			int frame_two = 220;
-//			Frame f;
-//			Frame f1 = null;
-//			Frame f2 = null;
-//			Frame g1, g2;
-//			CanvasFrame canvas = null;
-//			while ((f = frameGrabber.grab()) != null) {
-//				if (frameGrabber.getFrameNumber() == frame_one) {
-//					f1 = f;
-//					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
-//					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-//					canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
-//					canvas.showImage(f);
-//
-//				} else if (frameGrabber.getFrameNumber() == frame_two) {
-//					f2 = f;
-//					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
-//					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-//					canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
-//					canvas.showImage(f);
-//					break;
-//				}
-//			}
-//
-//			frameGrabber.stop();
-//			Mat mf1 = converter.convertToMat(f1);
-//			Mat mf2 = converter.convertToMat(f2);
-//			Mat mg1 = new Mat();
-//			Mat mg2 = new Mat();
-//			cvtColor(mf1, mg1, COLOR_BGR2GRAY);
-//			Frame gray = converter.convert(mg1);
-//			canvas.showImage(gray);
-//
-//			cvtColor(mf2, mg2, COLOR_BGR2GRAY);
-//			Frame gray2 = converter.convert(mg2);
-//			canvas.showImage(gray2);
-//
-//			IplImage diffGray = IplImage.create(converter.convert(gray).width(), converter.convert(gray).height(), IPL_DEPTH_8U, 1);
-//			IplImage iplGray = converter.convertToIplImage(gray);
-//			IplImage iplGray2 = converter.convertToIplImage(gray2);
-//
-//			cvAbsDiff(iplGray, iplGray2, diffGray);
-//
-//			CanvasFrame s = new CanvasFrame("" + frameGrabber.getFrameNumber());
-//			s.showImage(converter.convert(diffGray));
-//			Mat diffMatGray = converter.convertToMat(converter.convert(diffGray));
-//			Mat diffDestGray = new Mat();
-//			applyColorMap(diffMatGray, diffDestGray, COLORMAP_SPRING);
-//
-//			Frame finalColorMapDiff = converter.convert(diffDestGray);
-//			s.showImage(finalColorMapDiff);
-//			canvas.dispose();
-//			s.dispose();
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
+
 
 	static HashMap<Double, Double> colorScale(double one, double two, int min, int max, HashMap<Double, Double> channel) {
 		double cnx_range = (two - one);
@@ -304,6 +236,7 @@ public class Colors {
 			saveChannelIntensities(xChannel, yChannel, zChannel);
 			visualizeColorScale(xChannel, yChannel, zChannel);
 			
+			/*calculating combined color scale intensities */
 			ArrayList<Double> value_a = new ArrayList<Double>();
 			ArrayList<Double> color_x = new ArrayList<Double>();
 			ArrayList<Double> color_y = new ArrayList<Double>();
@@ -311,6 +244,7 @@ public class Colors {
 			double interval_x1 = 0,interval_y1 = 0,interval_z1 = 0;
 			double interval_x2 = 0,interval_y2 = 0,interval_z2 = 0;
 			boolean flag1  = false, flag2 = false;
+			//x-channel
 			for (Entry e : xChannel.entrySet()) {
 				if(Math.abs((Double)e.getValue()+1)<0.00000001)
 				{
@@ -334,7 +268,7 @@ public class Colors {
 					break;
 				}
 			}
-			
+			//y-channel
 			for (Entry e : yChannel.entrySet()) {
 				if(Math.abs((Double)e.getValue()+1)<0.00000001)
 				{
@@ -358,7 +292,7 @@ public class Colors {
 					break;
 				}
 			}
-			
+			//z-channel
 			for (Entry e : zChannel.entrySet()) {
 				if(Math.abs((Double)e.getValue()+1)<0.00000001)
 				{
@@ -384,7 +318,7 @@ public class Colors {
 			}
 			
 			
-			
+			//combine and save to file
 			for(int i = 0;i<(int)Math.pow(2,NUMBER_OF_BITS);i++)
 			{
 				double value = -1.0+2.0*i/(Math.pow(2, NUMBER_OF_BITS));
@@ -432,7 +366,7 @@ public class Colors {
 							
 				
 			}
-			
+			//combine and save to file
 			StringBuffer cScale = new StringBuffer();
 			System.out.println("Color Scale:" + "\r\n");
 			for(int i = 0;i<value_a.size();i++)
@@ -446,14 +380,6 @@ public class Colors {
 				cScale.append(s).append(color_x.get(i) + ",").append(color_y.get(i) + ",").append(color_z.get(i)+"\r\n");
 			}
 			saveFile("colorMap/rgb_color_scale", cScale);
-//			System.out.println(interval_x1);
-//			System.out.println(interval_x2);
-//			
-//			System.out.println(interval_y1);
-//			System.out.println(interval_y2);
-//			
-//			System.out.println(interval_z1);
-//			System.out.println(interval_z2);
 			
 		}
 		default:
@@ -485,35 +411,7 @@ public class Colors {
 //		saveFile("colorMap/rgb_z_channel_scale", z);
 	}
 
-//	class Scale extends JPanel {
-//		public void paint(Graphics g) {
-//			Graphics2D g2 = (Graphics2D) g;
-//			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//			Font font = new Font("Serif", Font.PLAIN, 96);
-//			g2.setFont(font);
-//			g2.drawString("Text", 40, 120);
-//		}
-//	}
-//
-//	static void convertColorScale() {
-//		float[] hsbValues = new float[3];
-//
-//		hsbValues = Color.RGBtoHSB(one.x, one.y, one.z, hsbValues);
-//
-//		float hue, saturation, brightness;
-//		hue = hsbValues[0];
-//		saturation = hsbValues[1];
-//		brightness = hsbValues[2];
-//
-//		JFrame f = new JFrame();
-//		f.getContentPane().add(new Colors().new Scale());
-//		f.setSize(300, 200);
-//		f.setVisible(true);
-//		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//		Color.HSBtoRGB(hue, saturation, brightness);
-//
-//	}
+
 
 	static void visualizeColorScale(HashMap<Double, Double> xChannel, HashMap<Double, Double> yChannel, HashMap<Double, Double> zChannel) {
 		// IplImage image = new IplImage();
@@ -642,5 +540,104 @@ public class Colors {
 			this.z = z;
 		}
 	}
+	
+	/*PART 4*/
 
+//	static void captureFrame() {
+//	FrameGrabber frameGrabber = new OpenCVFrameGrabber("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/1.mp4");
+//
+//	try {
+//		frameGrabber.start();
+//		OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
+//		frameGrabber.setFrameRate(30);
+//		int length = frameGrabber.getLengthInFrames();
+//		int frame_one = 8;
+//		int frame_two = 220;
+//		Frame f;
+//		Frame f1 = null;
+//		Frame f2 = null;
+//		Frame g1, g2;
+//		CanvasFrame canvas = null;
+//		while ((f = frameGrabber.grab()) != null) {
+//			if (frameGrabber.getFrameNumber() == frame_one) {
+//				f1 = f;
+//				canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
+//				canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+//				canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
+//				canvas.showImage(f);
+//
+//			} else if (frameGrabber.getFrameNumber() == frame_two) {
+//				f2 = f;
+//				canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
+//				canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+//				canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
+//				canvas.showImage(f);
+//				break;
+//			}
+//		}
+//
+//		frameGrabber.stop();
+//		Mat mf1 = converter.convertToMat(f1);
+//		Mat mf2 = converter.convertToMat(f2);
+//		Mat mg1 = new Mat();
+//		Mat mg2 = new Mat();
+//		cvtColor(mf1, mg1, COLOR_BGR2GRAY);
+//		Frame gray = converter.convert(mg1);
+//		canvas.showImage(gray);
+//
+//		cvtColor(mf2, mg2, COLOR_BGR2GRAY);
+//		Frame gray2 = converter.convert(mg2);
+//		canvas.showImage(gray2);
+//
+//		IplImage diffGray = IplImage.create(converter.convert(gray).width(), converter.convert(gray).height(), IPL_DEPTH_8U, 1);
+//		IplImage iplGray = converter.convertToIplImage(gray);
+//		IplImage iplGray2 = converter.convertToIplImage(gray2);
+//
+//		cvAbsDiff(iplGray, iplGray2, diffGray);
+//
+//		CanvasFrame s = new CanvasFrame("" + frameGrabber.getFrameNumber());
+//		s.showImage(converter.convert(diffGray));
+//		Mat diffMatGray = converter.convertToMat(converter.convert(diffGray));
+//		Mat diffDestGray = new Mat();
+//		applyColorMap(diffMatGray, diffDestGray, COLORMAP_SPRING);
+//
+//		Frame finalColorMapDiff = converter.convert(diffDestGray);
+//		s.showImage(finalColorMapDiff);
+//		canvas.dispose();
+//		s.dispose();
+//
+//	} catch (Exception e) {
+//		e.printStackTrace();
+//	}
+//}
+	
+//	class Scale extends JPanel {
+//	public void paint(Graphics g) {
+//		Graphics2D g2 = (Graphics2D) g;
+//		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//		Font font = new Font("Serif", Font.PLAIN, 96);
+//		g2.setFont(font);
+//		g2.drawString("Text", 40, 120);
+//	}
+//}
+//
+//static void convertColorScale() {
+//	float[] hsbValues = new float[3];
+//
+//	hsbValues = Color.RGBtoHSB(one.x, one.y, one.z, hsbValues);
+//
+//	float hue, saturation, brightness;
+//	hue = hsbValues[0];
+//	saturation = hsbValues[1];
+//	brightness = hsbValues[2];
+//
+//	JFrame f = new JFrame();
+//	f.getContentPane().add(new Colors().new Scale());
+//	f.setSize(300, 200);
+//	f.setVisible(true);
+//	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//	Color.HSBtoRGB(hue, saturation, brightness);
+//
+//}
 }
