@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.bytedeco.javacv.Frame;
 import org.bytedeco.javacv.FrameGrabber;
 import org.bytedeco.javacv.OpenCVFrameConverter;
 import org.bytedeco.javacv.OpenCVFrameGrabber;
+
 
 /**
  * @author kvivekanandan Sep 11, 2015 Test.java
@@ -245,6 +247,153 @@ public class Colors {
 			generateColorSets(xChannelBucket, yChannelBucket, zChannelBucket);
 			saveChannelIntensities(xChannel, yChannel, zChannel);
 			visualizeColorScale(xChannel, yChannel, zChannel);
+			
+			ArrayList<Double> value_a = new ArrayList<Double>();
+			ArrayList<Double> color_x = new ArrayList<Double>();
+			ArrayList<Double> color_y = new ArrayList<Double>();
+			ArrayList<Double> color_z = new ArrayList<Double>();
+			double interval_x1 = 0,interval_y1 = 0,interval_z1 = 0;
+			double interval_x2 = 0,interval_y2 = 0,interval_z2 = 0;
+			boolean flag1  = false, flag2 = false;
+			for (Entry e : xChannel.entrySet()) {
+				if(Math.abs((Double)e.getValue()+1)<0.00000001)
+				{
+					flag1 = true;
+					continue;
+				}
+				if(flag1)
+				{
+					interval_x1 = (Double)e.getValue()+1;
+					flag1 = false;
+				}
+				if(Math.abs((Double)e.getValue())<0.00000001)
+				{
+					flag2 = true;
+					continue;
+				}
+				if(flag2)
+				{
+					interval_x2 = (Double)e.getValue();
+					flag2 = false;
+					break;
+				}
+			}
+			
+			for (Entry e : yChannel.entrySet()) {
+				if(Math.abs((Double)e.getValue()+1)<0.00000001)
+				{
+					flag1 = true;
+					continue;
+				}
+				if(flag1)
+				{
+					interval_y1 = (Double)e.getValue()+1;
+					flag1 = false;
+				}
+				if(Math.abs((Double)e.getValue())<0.00000001)
+				{
+					flag2 = true;
+					continue;
+				}
+				if(flag2)
+				{
+					interval_y2 = (Double)e.getValue();
+					flag2 = false;
+					break;
+				}
+			}
+			
+			for (Entry e : zChannel.entrySet()) {
+				if(Math.abs((Double)e.getValue()+1)<0.00000001)
+				{
+					flag1 = true;
+					continue;
+				}
+				if(flag1)
+				{
+					interval_z1 = (Double)e.getValue()+1;
+					flag1 = false;
+				}
+				if(Math.abs((Double)e.getValue())<0.00000001)
+				{
+					flag2 = true;
+					continue;
+				}
+				if(flag2)
+				{
+					interval_z2 = (Double)e.getValue();
+					flag2 = false;
+					break;
+				}
+			}
+			
+			
+			
+			for(int i = 0;i<(int)Math.pow(2,NUMBER_OF_BITS);i++)
+			{
+				double value = -1.0+2.0*i/(Math.pow(2, NUMBER_OF_BITS));
+				value_a.add(value);
+				
+				if(value<=0)
+				{
+					double x = 0,y = 0,z = 0;
+					for (Entry e : xChannel.entrySet()) {
+						if(Math.abs(value - (Double)e.getValue())<interval_x1/2)
+							x = (Double)e.getKey();
+					}
+					for (Entry e : yChannel.entrySet()) {
+						if(Math.abs(value - (Double)e.getValue())<interval_y1/2)
+							y = (Double)e.getKey();
+					}
+					for (Entry e : zChannel.entrySet()) {
+						if(Math.abs(value - (Double)e.getValue())<interval_z1/2)
+							z = (Double)e.getKey();
+					}
+					color_x.add(x);
+					color_y.add(y);
+					color_z.add(z);
+				}
+				
+				else
+				{
+					double x = 0,y = 0,z = 0;
+					for (Entry e : xChannel.entrySet()) {
+						if(Math.abs(value - (Double)e.getValue())<interval_x2/2)
+							x = (Double)e.getKey();
+					}
+					for (Entry e : yChannel.entrySet()) {
+						if(Math.abs(value - (Double)e.getValue())<interval_y2/2)
+							y = (Double)e.getKey();
+					}
+					for (Entry e : zChannel.entrySet()) {
+						if(Math.abs(value - (Double)e.getValue())<interval_z2/2)
+							z = (Double)e.getKey();
+					}
+					color_x.add(x);
+					color_y.add(y);
+					color_z.add(z);
+				}
+							
+				
+			}
+			
+			for(int i = 0;i<value_a.size();i++)
+			{
+				System.out.println(value_a.get(i));
+				System.out.println(color_x.get(i));
+				System.out.println(color_y.get(i));
+				System.out.println(color_z.get(i));	
+			}
+			
+//			System.out.println(interval_x1);
+//			System.out.println(interval_x2);
+//			
+//			System.out.println(interval_y1);
+//			System.out.println(interval_y2);
+//			
+//			System.out.println(interval_z1);
+//			System.out.println(interval_z2);
+			
 		}
 		default:
 			break;
