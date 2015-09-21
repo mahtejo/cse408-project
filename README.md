@@ -1,2 +1,2 @@
 # cse408-project
-karthik, test from macbook
+The objective of the project is to seek a more profound understanding of the formats of various color models(RGB, XYB, XUY, Lab), their conversions from one to another and scaling down the color model size depending on the number of bits with which we can represent the image. As part of the project, during the first step we recognized openCV as the package/library with a huge repository to work with images and videos. Later, we worked on scaling the color models from higher bits to lower bits (like scaling a 24 bit color model(RGB) to 10 bit representation. We have also learned to apply the newly generated color models to raw images and visualize the image. 
