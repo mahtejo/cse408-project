@@ -85,7 +85,7 @@ public class Colors {
 		// input format cmd args: colormodel b x,y,z x,y,z x,y,z
 		
 		if(args!=null && args.length == 5){
-			if(COLOR_MODEL.RGB.equals(args[0])) {
+			if("rgb".equalsIgnoreCase(args[0])) {
 				colorModel = COLOR_MODEL.RGB;
 			}
 			NUMBER_OF_BITS = Integer.parseInt(args[1]);
@@ -93,7 +93,7 @@ public class Colors {
 			one = t.new ColorInstance(Integer.parseInt(cn1[0]),Integer.parseInt(cn1[1]),Integer.parseInt(cn1[2]));
 			String[] cn2 = args[3].split(",");
 			two = t.new ColorInstance(Integer.parseInt(cn2[0]),Integer.parseInt(cn2[1]),Integer.parseInt(cn2[2]));
-			String[] cn3 = args[2].split(",");
+			String[] cn3 = args[4].split(",");
 			three = t.new ColorInstance(Integer.parseInt(cn3[0]),Integer.parseInt(cn3[1]),Integer.parseInt(cn3[2]));
 
 		}else{
