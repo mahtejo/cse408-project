@@ -10,34 +10,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.color.*;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import static org.bytedeco.javacpp.opencv_core.*;
-import static org.bytedeco.javacpp.opencv_imgproc.*;
-import static org.bytedeco.javacpp.opencv_highgui.*;
-import static org.bytedeco.javacpp.opencv_imgcodecs.*;
-import static org.bytedeco.javacpp.opencv_calib3d.*;
-import static org.bytedeco.javacpp.opencv_objdetect.*;
-import static org.bytedeco.javacpp.opencv_videoio.cvCaptureFromFile;
-
-import org.bytedeco.javacpp.FlyCapture2.Image;
-import org.bytedeco.javacpp.opencv_core.IplImage;
-import org.bytedeco.javacpp.opencv_videoio.VideoCapture;
-import org.bytedeco.javacv.CanvasFrame;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.FrameGrabber;
-import org.bytedeco.javacv.OpenCVFrameConverter;
-import org.bytedeco.javacv.OpenCVFrameGrabber;
 
 
 /**
@@ -125,73 +97,73 @@ public class Colors {
 	static void printNumberOfBits(){
 		System.out.println("Number of bits for color map: " + NUMBER_OF_BITS);
 	}
-	static void captureFrame() {
-		FrameGrabber frameGrabber = new OpenCVFrameGrabber("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/1.mp4");
-
-		try {
-			frameGrabber.start();
-			OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
-			frameGrabber.setFrameRate(30);
-			int length = frameGrabber.getLengthInFrames();
-			int frame_one = 8;
-			int frame_two = 220;
-			Frame f;
-			Frame f1 = null;
-			Frame f2 = null;
-			Frame g1, g2;
-			CanvasFrame canvas = null;
-			while ((f = frameGrabber.grab()) != null) {
-				if (frameGrabber.getFrameNumber() == frame_one) {
-					f1 = f;
-					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
-					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-					canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
-					canvas.showImage(f);
-
-				} else if (frameGrabber.getFrameNumber() == frame_two) {
-					f2 = f;
-					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
-					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-					canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
-					canvas.showImage(f);
-					break;
-				}
-			}
-
-			frameGrabber.stop();
-			Mat mf1 = converter.convertToMat(f1);
-			Mat mf2 = converter.convertToMat(f2);
-			Mat mg1 = new Mat();
-			Mat mg2 = new Mat();
-			cvtColor(mf1, mg1, COLOR_BGR2GRAY);
-			Frame gray = converter.convert(mg1);
-			canvas.showImage(gray);
-
-			cvtColor(mf2, mg2, COLOR_BGR2GRAY);
-			Frame gray2 = converter.convert(mg2);
-			canvas.showImage(gray2);
-
-			IplImage diffGray = IplImage.create(converter.convert(gray).width(), converter.convert(gray).height(), IPL_DEPTH_8U, 1);
-			IplImage iplGray = converter.convertToIplImage(gray);
-			IplImage iplGray2 = converter.convertToIplImage(gray2);
-
-			cvAbsDiff(iplGray, iplGray2, diffGray);
-
-			CanvasFrame s = new CanvasFrame("" + frameGrabber.getFrameNumber());
-			s.showImage(converter.convert(diffGray));
-			Mat diffMatGray = converter.convertToMat(converter.convert(diffGray));
-			Mat diffDestGray = new Mat();
-			applyColorMap(diffMatGray, diffDestGray, COLORMAP_SPRING);
-
-			Frame finalColorMapDiff = converter.convert(diffDestGray);
-			s.showImage(finalColorMapDiff);
-			canvas.dispose();
-			s.dispose();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	static void captureFrame() {
+//		FrameGrabber frameGrabber = new OpenCVFrameGrabber("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/1.mp4");
+//
+//		try {
+//			frameGrabber.start();
+//			OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
+//			frameGrabber.setFrameRate(30);
+//			int length = frameGrabber.getLengthInFrames();
+//			int frame_one = 8;
+//			int frame_two = 220;
+//			Frame f;
+//			Frame f1 = null;
+//			Frame f2 = null;
+//			Frame g1, g2;
+//			CanvasFrame canvas = null;
+//			while ((f = frameGrabber.grab()) != null) {
+//				if (frameGrabber.getFrameNumber() == frame_one) {
+//					f1 = f;
+//					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
+//					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+//					canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
+//					canvas.showImage(f);
+//
+//				} else if (frameGrabber.getFrameNumber() == frame_two) {
+//					f2 = f;
+//					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
+//					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+//					canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
+//					canvas.showImage(f);
+//					break;
+//				}
+//			}
+//
+//			frameGrabber.stop();
+//			Mat mf1 = converter.convertToMat(f1);
+//			Mat mf2 = converter.convertToMat(f2);
+//			Mat mg1 = new Mat();
+//			Mat mg2 = new Mat();
+//			cvtColor(mf1, mg1, COLOR_BGR2GRAY);
+//			Frame gray = converter.convert(mg1);
+//			canvas.showImage(gray);
+//
+//			cvtColor(mf2, mg2, COLOR_BGR2GRAY);
+//			Frame gray2 = converter.convert(mg2);
+//			canvas.showImage(gray2);
+//
+//			IplImage diffGray = IplImage.create(converter.convert(gray).width(), converter.convert(gray).height(), IPL_DEPTH_8U, 1);
+//			IplImage iplGray = converter.convertToIplImage(gray);
+//			IplImage iplGray2 = converter.convertToIplImage(gray2);
+//
+//			cvAbsDiff(iplGray, iplGray2, diffGray);
+//
+//			CanvasFrame s = new CanvasFrame("" + frameGrabber.getFrameNumber());
+//			s.showImage(converter.convert(diffGray));
+//			Mat diffMatGray = converter.convertToMat(converter.convert(diffGray));
+//			Mat diffDestGray = new Mat();
+//			applyColorMap(diffMatGray, diffDestGray, COLORMAP_SPRING);
+//
+//			Frame finalColorMapDiff = converter.convert(diffDestGray);
+//			s.showImage(finalColorMapDiff);
+//			canvas.dispose();
+//			s.dispose();
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	static HashMap<Double, Double> colorScale(double one, double two, int min, int max, HashMap<Double, Double> channel) {
 		double cnx_range = (two - one);
