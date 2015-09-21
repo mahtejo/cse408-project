@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -50,6 +51,7 @@ public class Colors {
 	public static ColorInstance one;
 	public static ColorInstance two;
 	public static ColorInstance three;
+	public static COLOR_MODEL colorModel;
 
 	enum COLOR_MODEL {
 		RGB(8, 8, 8), XYZ(8, 8, 8), YUV(8, 4, 4), YCbCr(8, 2, 4), YIQ(8, 4, 2), HSL(1, 1, 1);
@@ -77,23 +79,52 @@ public class Colors {
 	}
 
 	public static void main(String args[]) {
-//		captureFrame();
-
 		Colors t = new Colors();
 		COLOR_MAP = new ColorMap();
-		one = t.new ColorInstance(134, 34, 123);
-		two = t.new ColorInstance(180, 60, 155);
-		three = t.new ColorInstance(230, 90, 200);
 
-		// one = t.new ColorInstance(0, 0, 0);
-		// two = t.new ColorInstance(50, 50, 50);
-		// three = t.new ColorInstance(100, 100, 100);
+		// input format cmd args: colormodel b x,y,z x,y,z x,y,z
+		
+		if(args!=null && args.length == 5){
+			if(COLOR_MODEL.RGB.equals(args[0])) {
+				colorModel = COLOR_MODEL.RGB;
+			}
+			NUMBER_OF_BITS = Integer.parseInt(args[1]);
+			String[] cn1 = args[2].split(",");
+			one = t.new ColorInstance(Integer.parseInt(cn1[0]),Integer.parseInt(cn1[1]),Integer.parseInt(cn1[2]));
+			String[] cn2 = args[3].split(",");
+			two = t.new ColorInstance(Integer.parseInt(cn2[0]),Integer.parseInt(cn2[1]),Integer.parseInt(cn2[2]));
+			String[] cn3 = args[2].split(",");
+			three = t.new ColorInstance(Integer.parseInt(cn3[0]),Integer.parseInt(cn3[1]),Integer.parseInt(cn3[2]));
 
-//		convertColorScale();
+		}else{
+			System.out.println("Incorrect input parameters, continuing with default values:");
+			colorModel = COLOR_MODEL.RGB;
+			NUMBER_OF_BITS = 9;
+			one = t.new ColorInstance(134, 34, 123);
+			two = t.new ColorInstance(180, 60, 155);
+			three = t.new ColorInstance(230, 90, 200);
+		}
+		printColorInstances();
+		printColorModel();
+		printNumberOfBits();
 
 		colorMap(COLOR_MODEL.RGB, one, two, three, NUMBER_OF_BITS);
+		
 	}
 
+	static void printColorInstances(){
+		System.out.println("C-1: " + one.x + "," + one.y + "," + one.z);
+		System.out.println("C0: " + two.x + "," + two.y + "," + two.z);
+		System.out.println("C+1: " + three.x + "," + three.y + "," + three.z);
+	}
+	
+	static void printColorModel(){
+		System.out.println("Color Model" + colorModel);
+	}
+	
+	static void printNumberOfBits(){
+		System.out.println("Number of bits for color map: " + NUMBER_OF_BITS);
+	}
 	static void captureFrame() {
 		FrameGrabber frameGrabber = new OpenCVFrameGrabber("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/1.mp4");
 
@@ -185,13 +216,13 @@ public class Colors {
 		Double i = new Double(c);
 		int counter = 0;
 		double value = 0;
-		int prev_bucket = 0;
-		int current_bucket = 0;
+		Integer prev_bucket = 0;
+		Integer current_bucket = 0;
 		while (i <= l) {
 			int b = buckets;
 			current_bucket = (counter / b);
 			if (prev_bucket != current_bucket) {
-				channelBucket.put(prev_bucket, (value / b));
+				channelBucket.put(prev_bucket, (double) Math.round((value / b)));
 				prev_bucket = current_bucket;
 				value = 0;
 				continue;
@@ -214,38 +245,38 @@ public class Colors {
 			 * */
 			HashMap<Double, Double> xChannel = new LinkedHashMap<Double, Double>();
 			HashMap<Integer, Double> xChannelBucket = new HashMap<Integer, Double>();
-			System.out.println("X Channel: ");
+			//System.out.println("X Channel: ");
 			colorScale(one.x, two.x, -1, 0, xChannel);
 			colorScale(two.x, three.x, 0, 1, xChannel);
-			printMap(xChannel);
+			//printMap(xChannel);
 			int x_range = three.x - one.x;
 			COLOR_MAP.x_buckets = x_range / (int) Math.pow(2, COLOR_MAP.x_bits);
 			calculateChannelBucket(one.x, three.x, COLOR_MAP.x_buckets, xChannel, xChannelBucket);
-			printMap(xChannelBucket);
+			//printMap(xChannelBucket);
 
 			HashMap<Double, Double> yChannel = new HashMap<Double, Double>();
 			HashMap<Integer, Double> yChannelBucket = new HashMap<Integer, Double>();
-			System.out.println("Y Channel: ");
+			//System.out.println("Y Channel: ");
 			yChannel = colorScale(one.y, two.y, -1, 0, yChannel);
 			yChannel = colorScale(two.y, three.y, 0, 1, yChannel);
-			printMap(yChannel);
+			//printMap(yChannel);
 			int y_range = three.y - one.y;
 			COLOR_MAP.y_buckets = y_range / (int) Math.pow(2, COLOR_MAP.y_bits);
 			calculateChannelBucket(one.y, three.y, COLOR_MAP.y_buckets, yChannel, yChannelBucket);
-			System.out.println("Y Color Channel: ");
-			printMap(yChannelBucket);
+			//System.out.println("Y Color Channel: ");
+			//printMap(yChannelBucket);
 
 			HashMap<Double, Double> zChannel = new HashMap<Double, Double>();
 			HashMap<Integer, Double> zChannelBucket = new HashMap<Integer, Double>();
-			System.out.println("Z Channel: ");
+			//System.out.println("Z Channel: ");
 			zChannel = colorScale(one.z, two.z, -1, 0, zChannel);
 			zChannel = colorScale(two.z, three.z, 0, 1, zChannel);
-			printMap(zChannel);
+			//printMap(zChannel);
 			int z_range = three.z - one.z;
 			COLOR_MAP.z_buckets = z_range / (int) Math.pow(2, COLOR_MAP.z_bits);
 			calculateChannelBucket(one.z, three.z, COLOR_MAP.z_buckets, zChannel, zChannelBucket);
-			System.out.println("Z Color Channel: ");
-			printMap(zChannelBucket);
+			//System.out.println("Z Color Channel: ");
+			//printMap(zChannelBucket);
 
 			generateColorSets(xChannelBucket, yChannelBucket, zChannelBucket);
 			saveChannelIntensities(xChannel, yChannel, zChannel);
@@ -380,14 +411,19 @@ public class Colors {
 				
 			}
 			
+			StringBuffer cScale = new StringBuffer();
+			System.out.println("Color Scale:" + "\r\n");
 			for(int i = 0;i<value_a.size();i++)
 			{
-				System.out.println(value_a.get(i));
-				System.out.println(color_x.get(i));
-				System.out.println(color_y.get(i));
-				System.out.println(color_z.get(i));	
+				double d = value_a.get(i);
+				String s = new DecimalFormat("#0.00000000").format(d) + "		";
+				System.out.print(s);
+				System.out.print(color_x.get(i) + ",");
+				System.out.print(color_y.get(i) + ",");
+				System.out.print(color_z.get(i) + "\r\n");	
+				cScale.append(s).append(color_x.get(i) + ",").append(color_y.get(i) + ",").append(color_z.get(i)+"\r\n");
 			}
-			
+			saveFile("colorMap/rgb_color_scale", cScale);
 //			System.out.println(interval_x1);
 //			System.out.println(interval_x2);
 //			
@@ -422,9 +458,9 @@ public class Colors {
 		for (Entry e : zChannel.entrySet()) {
 			z.append(e.getValue() + " " + e.getKey() + "\r\n");
 		}
-		saveFile("colorMap/rgb_x_channel_scale", x);
-		saveFile("colorMap/rgb_y_channel_scale", y);
-		saveFile("colorMap/rgb_z_channel_scale", z);
+//		saveFile("colorMap/rgb_x_channel_scale", x);
+//		saveFile("colorMap/rgb_y_channel_scale", y);
+//		saveFile("colorMap/rgb_z_channel_scale", z);
 	}
 
 //	class Scale extends JPanel {
@@ -476,9 +512,9 @@ public class Colors {
 	 * @param zChannelBucket
 	 */
 	private static void generateColorSets(HashMap<Integer, Double> xChannelBucket, HashMap<Integer, Double> yChannelBucket, HashMap<Integer, Double> zChannelBucket) {
-		System.out.println("Color Sets: ");
 		StringBuffer b = new StringBuffer();
 		StringBuffer colors = new StringBuffer();
+		System.out.println("COLOR MAP: \r\n");
 		colors.append("ColorMAP: RGB " + "number of bits: " + NUMBER_OF_BITS + "\r\n");
 		int color_id = 0;
 		for (int i = 0; i < xChannelBucket.size(); i++) {
@@ -512,7 +548,7 @@ public class Colors {
 				}
 			}
 		}
-		saveFile("colorMap/rgb_", b);
+		//saveFile("colorMap/rgb_", b);
 		saveFile("colorMap/rgb_colors_", colors);
 	}
 
@@ -525,7 +561,7 @@ public class Colors {
 				if (!cMap.exists()) {
 					try {
 						cMap.createNewFile();
-						System.out.println("Created file");
+						System.out.println("Created file: " + cMap.getAbsolutePath());
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
