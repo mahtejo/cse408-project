@@ -206,7 +206,10 @@ public class Colors {
 		switch (colorModel) {
 		case RGB: {
 			splitBitsByColorChannel(colorModel);
-
+			/* 
+			 * xChannel - color scale between [-1,1] 
+			 * xChannelBucket - color bins in color map 
+			 * */
 			HashMap<Double, Double> xChannel = new LinkedHashMap<Double, Double>();
 			HashMap<Integer, Double> xChannelBucket = new HashMap<Integer, Double>();
 			System.out.println("X Channel: ");
