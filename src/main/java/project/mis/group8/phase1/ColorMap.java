@@ -2,6 +2,7 @@
  * @author kvivekanandan
  * Sep 16, 2015
  * ColorMap.java
+ * modified from http://rsb.info.nih.gov/ij/plugins/download/Color_Space_Converter.java
  */
 
 package project.mis.group8.phase1;

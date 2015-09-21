@@ -53,20 +53,70 @@ public class Colors {
 	public static void main(String args[]) {
 		Colors t = new Colors();
 		COLOR_MAP = new ColorMap();
-
+		ConvertColors converter = new ConvertColors();
 		// input format cmd args: colormodel b x,y,z x,y,z x,y,z
 		
 		if(args!=null && args.length == 5){
+			String[] cn1 = args[2].split(",");
+			String[] cn2 = args[3].split(",");
+			String[] cn3 = args[4].split(",");
+			NUMBER_OF_BITS = Integer.parseInt(args[1]);
+			
 			if("rgb".equalsIgnoreCase(args[0])) {
 				colorModel = COLOR_MODEL.RGB;
+				
+				one = t.new ColorInstance(Integer.parseInt(cn1[0]),Integer.parseInt(cn1[1]),Integer.parseInt(cn1[2]));		
+				two = t.new ColorInstance(Integer.parseInt(cn2[0]),Integer.parseInt(cn2[1]),Integer.parseInt(cn2[2]));
+				three = t.new ColorInstance(Integer.parseInt(cn3[0]),Integer.parseInt(cn3[1]),Integer.parseInt(cn3[2]));
+			} else if("lab".equalsIgnoreCase(args[0])){
+				
+				double dx = Double.parseDouble(cn1[0]);
+				double dy = Double.parseDouble(cn1[1]);
+				double dz = Double.parseDouble(cn1[2]);
+				double[] d = {dx, dy, dz};
+				int[] arr = converter.LABtoRGB(d);
+				one = t.new ColorInstance(arr[0], arr[1],arr[2]);
+				
+				 dx = Double.parseDouble(cn2[0]);
+				 dy = Double.parseDouble(cn2[1]);
+				 dz = Double.parseDouble(cn2[2]);
+				 double[] d2 = {dx, dy, dz};
+				 int[] arr2 = converter.LABtoRGB(d2);	
+				two = t.new ColorInstance(arr2[0], arr2[1],arr2[2]);
+				
+				 dx = Double.parseDouble(cn3[0]);
+				 dy = Double.parseDouble(cn3[1]);
+				 dz = Double.parseDouble(cn3[2]);
+				 double[] d3 = {dx, dy, dz};
+				 int[] arr3 = converter.LABtoRGB(d3);
+				 three = t.new ColorInstance(arr3[0], arr3[1],arr3[2]);
+				 colorModel = COLOR_MODEL.RGB;
+			} else if("xyz".equalsIgnoreCase(args[0])){
+				double dx = Double.parseDouble(cn1[0]);
+				double dy = Double.parseDouble(cn1[1]);
+				double dz = Double.parseDouble(cn1[2]);
+				double[] d = {dx, dy, dz};
+				int[] arr = converter.XYZtoRGB(d);
+				one = t.new ColorInstance(arr[0], arr[1],arr[2]);
+				
+				 dx = Double.parseDouble(cn2[0]);
+				 dy = Double.parseDouble(cn2[1]);
+				 dz = Double.parseDouble(cn2[2]);
+				 double[] d2 = {dx, dy, dz};
+				 int[] arr2 = converter.LABtoRGB(d2);	
+				two = t.new ColorInstance(arr2[0], arr2[1],arr2[2]);
+				
+				 dx = Double.parseDouble(cn3[0]);
+				 dy = Double.parseDouble(cn3[1]);
+				 dz = Double.parseDouble(cn3[2]);
+				 double[] d3 = {dx, dy, dz};
+				 int[] arr3 = converter.LABtoRGB(d3);
+				 three = t.new ColorInstance(arr3[0], arr3[1],arr3[2]);
+				 colorModel = COLOR_MODEL.RGB;
 			}
-			NUMBER_OF_BITS = Integer.parseInt(args[1]);
-			String[] cn1 = args[2].split(",");
-			one = t.new ColorInstance(Integer.parseInt(cn1[0]),Integer.parseInt(cn1[1]),Integer.parseInt(cn1[2]));
-			String[] cn2 = args[3].split(",");
-			two = t.new ColorInstance(Integer.parseInt(cn2[0]),Integer.parseInt(cn2[1]),Integer.parseInt(cn2[2]));
-			String[] cn3 = args[4].split(",");
-			three = t.new ColorInstance(Integer.parseInt(cn3[0]),Integer.parseInt(cn3[1]),Integer.parseInt(cn3[2]));
+			
+			
+			
 
 		}else{
 			System.out.println("Incorrect input parameters, continuing with default values:");
