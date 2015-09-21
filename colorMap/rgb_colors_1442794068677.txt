@@ -1,3 +1,4 @@
+ColorMAP: RGB number of bits: 9
 ColorID: 0	139.5  37.0  127.0
 ColorID: 1	139.5  37.0  136.0
 ColorID: 2	139.5  37.0  145.0

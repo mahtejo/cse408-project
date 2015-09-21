@@ -9,6 +9,15 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.color.*;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import static org.bytedeco.javacpp.opencv_core.*;
 import static org.bytedeco.javacpp.opencv_imgproc.*;
@@ -34,7 +43,7 @@ import org.bytedeco.javacv.OpenCVFrameGrabber;
 
 public class Colors {
 
-	public static int NUMBER_OF_BITS = 4;
+	public static int NUMBER_OF_BITS = 9;
 	public static ColorMap COLOR_MAP;
 	public static ColorInstance one;
 	public static ColorInstance two;
@@ -66,19 +75,21 @@ public class Colors {
 	}
 
 	public static void main(String args[]) {
-		captureFrame();
+//		captureFrame();
 
-		 Colors t = new Colors();
-		 COLOR_MAP = new ColorMap();
-		 one = t.new ColorInstance(134, 34, 123);
-		 two = t.new ColorInstance(180, 60, 155);
-		 three = t.new ColorInstance(230, 90, 200);
+		Colors t = new Colors();
+		COLOR_MAP = new ColorMap();
+		one = t.new ColorInstance(134, 34, 123);
+		two = t.new ColorInstance(180, 60, 155);
+		three = t.new ColorInstance(230, 90, 200);
 
 		// one = t.new ColorInstance(0, 0, 0);
 		// two = t.new ColorInstance(50, 50, 50);
 		// three = t.new ColorInstance(100, 100, 100);
 
-		 colorMap(COLOR_MODEL.RGB, one, two, three, NUMBER_OF_BITS);
+//		convertColorScale();
+
+		colorMap(COLOR_MODEL.RGB, one, two, three, NUMBER_OF_BITS);
 	}
 
 	static void captureFrame() {
@@ -97,14 +108,14 @@ public class Colors {
 			Frame g1, g2;
 			CanvasFrame canvas = null;
 			while ((f = frameGrabber.grab()) != null) {
-				if (frameGrabber.getFrameNumber() == frame_one ) {
+				if (frameGrabber.getFrameNumber() == frame_one) {
 					f1 = f;
 					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
 					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 					canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
 					canvas.showImage(f);
-					
-				} else if(frameGrabber.getFrameNumber() == frame_two){
+
+				} else if (frameGrabber.getFrameNumber() == frame_two) {
 					f2 = f;
 					canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
 					canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
@@ -113,36 +124,37 @@ public class Colors {
 					break;
 				}
 			}
-			
+
 			frameGrabber.stop();
 			Mat mf1 = converter.convertToMat(f1);
 			Mat mf2 = converter.convertToMat(f2);
-			Mat mg1 = new Mat(); Mat mg2 = 	new Mat();
-			cvtColor(mf1,mg1,COLOR_BGR2GRAY);
+			Mat mg1 = new Mat();
+			Mat mg2 = new Mat();
+			cvtColor(mf1, mg1, COLOR_BGR2GRAY);
 			Frame gray = converter.convert(mg1);
 			canvas.showImage(gray);
-			
-			cvtColor(mf2,mg2,COLOR_BGR2GRAY);
+
+			cvtColor(mf2, mg2, COLOR_BGR2GRAY);
 			Frame gray2 = converter.convert(mg2);
 			canvas.showImage(gray2);
-			
+
 			IplImage diffGray = IplImage.create(converter.convert(gray).width(), converter.convert(gray).height(), IPL_DEPTH_8U, 1);
 			IplImage iplGray = converter.convertToIplImage(gray);
 			IplImage iplGray2 = converter.convertToIplImage(gray2);
-			
+
 			cvAbsDiff(iplGray, iplGray2, diffGray);
-			
+
 			CanvasFrame s = new CanvasFrame("" + frameGrabber.getFrameNumber());
 			s.showImage(converter.convert(diffGray));
 			Mat diffMatGray = converter.convertToMat(converter.convert(diffGray));
 			Mat diffDestGray = new Mat();
 			applyColorMap(diffMatGray, diffDestGray, COLORMAP_SPRING);
-			
+
 			Frame finalColorMapDiff = converter.convert(diffDestGray);
 			s.showImage(finalColorMapDiff);
 			canvas.dispose();
 			s.dispose();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -231,11 +243,79 @@ public class Colors {
 			printMap(zChannelBucket);
 
 			generateColorSets(xChannelBucket, yChannelBucket, zChannelBucket);
+			saveChannelIntensities(xChannel, yChannel, zChannel);
+			visualizeColorScale(xChannel, yChannel, zChannel);
 		}
 		default:
 			break;
 		}
 
+	}
+
+	/**
+	 * @param xChannel
+	 * @param yChannel
+	 * @param zChannel
+	 */
+	private static void saveChannelIntensities(HashMap<Double, Double> xChannel, HashMap<Double, Double> yChannel, HashMap<Double, Double> zChannel) {
+		StringBuffer x = new StringBuffer();
+		StringBuffer y = new StringBuffer();
+		StringBuffer z = new StringBuffer();
+		for (Entry e : xChannel.entrySet()) {
+			x.append(e.getValue() + " " + e.getKey() + "\r\n");
+		}
+		for (Entry e : yChannel.entrySet()) {
+			y.append(e.getValue() + " " + e.getKey() + "\r\n");
+		}
+		for (Entry e : zChannel.entrySet()) {
+			z.append(e.getValue() + " " + e.getKey() + "\r\n");
+		}
+		saveFile("colorMap/rgb_x_channel_scale", x);
+		saveFile("colorMap/rgb_y_channel_scale", y);
+		saveFile("colorMap/rgb_z_channel_scale", z);
+	}
+
+//	class Scale extends JPanel {
+//		public void paint(Graphics g) {
+//			Graphics2D g2 = (Graphics2D) g;
+//			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+//			Font font = new Font("Serif", Font.PLAIN, 96);
+//			g2.setFont(font);
+//			g2.drawString("Text", 40, 120);
+//		}
+//	}
+//
+//	static void convertColorScale() {
+//		float[] hsbValues = new float[3];
+//
+//		hsbValues = Color.RGBtoHSB(one.x, one.y, one.z, hsbValues);
+//
+//		float hue, saturation, brightness;
+//		hue = hsbValues[0];
+//		saturation = hsbValues[1];
+//		brightness = hsbValues[2];
+//
+//		JFrame f = new JFrame();
+//		f.getContentPane().add(new Colors().new Scale());
+//		f.setSize(300, 200);
+//		f.setVisible(true);
+//		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//		Color.HSBtoRGB(hue, saturation, brightness);
+//
+//	}
+
+	static void visualizeColorScale(HashMap<Double, Double> xChannel, HashMap<Double, Double> yChannel, HashMap<Double, Double> zChannel) {
+		// IplImage image = new IplImage();
+		// OpenCVFrameConverter.ToIplImage converter = new
+		// OpenCVFrameConverter.ToIplImage();
+		// // Mat mat = converter.convertToMat(converter.convert(image));
+		// Mat mat = new Mat();
+		// CanvasFrame canvas = new CanvasFrame("Color Scale");
+		// line(mat,new Point(0,0), new Point(200) , new
+		// Scalar(130.0,130.0,130,0));
+		// canvas.showImage(converter.convert(mat));
+		// System.out.print("tst");
 	}
 
 	/**
@@ -247,6 +327,7 @@ public class Colors {
 		System.out.println("Color Sets: ");
 		StringBuffer b = new StringBuffer();
 		StringBuffer colors = new StringBuffer();
+		colors.append("ColorMAP: RGB " + "number of bits: " + NUMBER_OF_BITS + "\r\n");
 		int color_id = 0;
 		for (int i = 0; i < xChannelBucket.size(); i++) {
 			double x = xChannelBucket.get(i);
@@ -279,36 +360,33 @@ public class Colors {
 				}
 			}
 		}
-		File cMap = new File("colorMap/rgb_" + System.currentTimeMillis() + ".txt");
-		File colorsMap = new File("colorMap/rgb_colors_" + System.currentTimeMillis() + ".txt");
-		if (!cMap.exists()) {
-			try {
-				cMap.createNewFile();
-				System.out.println("Created file");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		if (!colorsMap.exists()) {
-			try {
-				cMap.createNewFile();
-				System.out.println("Created colors file");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		saveFile("colorMap/rgb_", b);
+		saveFile("colorMap/rgb_colors_", colors);
+	}
+
+	static void saveFile(String fileName, StringBuffer b) {
+		File cMap;
 		BufferedWriter bWriter = null;
 		try {
-			bWriter = new BufferedWriter(new FileWriter(cMap));
-			bWriter.write(b.toString());
-			bWriter.flush();
+			if (fileName != null && !fileName.isEmpty()) {
+				cMap = new File(fileName + System.currentTimeMillis() + ".txt");
+				if (!cMap.exists()) {
+					try {
+						cMap.createNewFile();
+						System.out.println("Created file");
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+				try {
+					bWriter = new BufferedWriter(new FileWriter(cMap));
+					bWriter.write(b.toString());
+					bWriter.flush();
+				} catch (IOException e) {
+					e.printStackTrace();
 
-			bWriter = new BufferedWriter(new FileWriter(colorsMap));
-			bWriter.write(colors.toString());
-			bWriter.flush();
-
-		} catch (IOException e) {
-			e.printStackTrace();
+				}
+			}
 		} finally {
 			if (bWriter != null)
 				try {
