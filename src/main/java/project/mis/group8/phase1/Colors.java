@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
+import java.awt.Color;
+import java.awt.color.*;
 
 /**
  * @author kvivekanandan Sep 11, 2015 Test.java
@@ -18,7 +19,7 @@ import java.util.Map.Entry;
 
 public class Colors {
 
-	public static int NUMBER_OF_BITS = 9;
+	public static int NUMBER_OF_BITS = 10;
 	public static ColorMap COLOR_MAP;
 	public static ColorInstance one;
 	public static ColorInstance two;
@@ -50,75 +51,116 @@ public class Colors {
 		}
 	}
 
+	/* example input */
+	/*
+	 * lab 9 33.226861713751966,51.73956772615884,-27.816264860647145
+	 * 46.0445092822155,58.61079905739503,-26.79008588379461
+	 * 60.16369927471415,66.29400737597201,-30.47776380706695
+	 */
+	/*
+	 * xyz 9 13.978694612825759,7.642447807972962,19.477271958547696
+	 * 26.35464393471223,15.301573558447153,32.57480105128977
+	 * 46.71461838430337,28.305453741834803,57.64494734609043
+	 */
+	/*
+	 * hsv 9 306.600003968328,59.523807840037456,32.941176818281996
+	 * 312.5000017927959,49.999999860301614,47.05882357323871
+	 * 312.85714356418777,73.68421021673487,62.74509847748513
+	 */
+	/*
+	 * hsl 9 306.600003968328,0.7462686567164178,0.5254901960784314
+	 * 312.5000017927959,0.6666666666666667,0.7058823529411765
+	 * 312.85714356418777,0.6086956521739131,0.9019607843137255
+	 */
+
 	public static void main(String args[]) {
 		Colors t = new Colors();
 		COLOR_MAP = new ColorMap();
 		ConvertColors converter = new ConvertColors();
-		
+
 		// input format cmd args: colormodel b x,y,z x,y,z x,y,z
-		
-		if(args!=null && args.length == 5){
+
+		if (args != null && args.length == 5) {
 			String[] cn1 = args[2].split(",");
 			String[] cn2 = args[3].split(",");
 			String[] cn3 = args[4].split(",");
 			NUMBER_OF_BITS = Integer.parseInt(args[1]);
-			
-			if("rgb".equalsIgnoreCase(args[0])) {
+
+			if ("rgb".equalsIgnoreCase(args[0])) {
 				colorModel = COLOR_MODEL.RGB;
-				
-				one = t.new ColorInstance(Integer.parseInt(cn1[0]),Integer.parseInt(cn1[1]),Integer.parseInt(cn1[2]));		
-				two = t.new ColorInstance(Integer.parseInt(cn2[0]),Integer.parseInt(cn2[1]),Integer.parseInt(cn2[2]));
-				three = t.new ColorInstance(Integer.parseInt(cn3[0]),Integer.parseInt(cn3[1]),Integer.parseInt(cn3[2]));
-			} else if("lab".equalsIgnoreCase(args[0])){
-				
+
+				one = t.new ColorInstance(Integer.parseInt(cn1[0]), Integer.parseInt(cn1[1]), Integer.parseInt(cn1[2]));
+				two = t.new ColorInstance(Integer.parseInt(cn2[0]), Integer.parseInt(cn2[1]), Integer.parseInt(cn2[2]));
+				three = t.new ColorInstance(Integer.parseInt(cn3[0]), Integer.parseInt(cn3[1]), Integer.parseInt(cn3[2]));
+			} else if ("lab".equalsIgnoreCase(args[0])) {
+
 				double dx = Double.parseDouble(cn1[0]);
 				double dy = Double.parseDouble(cn1[1]);
 				double dz = Double.parseDouble(cn1[2]);
-				double[] d = {dx, dy, dz};
+				double[] d = { dx, dy, dz };
 				int[] arr = converter.LABtoRGB(d);
-				one = t.new ColorInstance(arr[0], arr[1],arr[2]);
-				
-				 dx = Double.parseDouble(cn2[0]);
-				 dy = Double.parseDouble(cn2[1]);
-				 dz = Double.parseDouble(cn2[2]);
-				 double[] d2 = {dx, dy, dz};
-				 int[] arr2 = converter.LABtoRGB(d2);	
-				two = t.new ColorInstance(arr2[0], arr2[1],arr2[2]);
-				
-				 dx = Double.parseDouble(cn3[0]);
-				 dy = Double.parseDouble(cn3[1]);
-				 dz = Double.parseDouble(cn3[2]);
-				 double[] d3 = {dx, dy, dz};
-				 int[] arr3 = converter.LABtoRGB(d3);
-				 three = t.new ColorInstance(arr3[0], arr3[1],arr3[2]);
-				 colorModel = COLOR_MODEL.RGB;
-			} else if("xyz".equalsIgnoreCase(args[0])){
+				one = t.new ColorInstance(arr[0], arr[1], arr[2]);
+
+				dx = Double.parseDouble(cn2[0]);
+				dy = Double.parseDouble(cn2[1]);
+				dz = Double.parseDouble(cn2[2]);
+				double[] d2 = { dx, dy, dz };
+				int[] arr2 = converter.LABtoRGB(d2);
+				two = t.new ColorInstance(arr2[0], arr2[1], arr2[2]);
+
+				dx = Double.parseDouble(cn3[0]);
+				dy = Double.parseDouble(cn3[1]);
+				dz = Double.parseDouble(cn3[2]);
+				double[] d3 = { dx, dy, dz };
+				int[] arr3 = converter.LABtoRGB(d3);
+				three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
+				colorModel = COLOR_MODEL.RGB;
+			} else if ("xyz".equalsIgnoreCase(args[0])) {
 				double dx = Double.parseDouble(cn1[0]);
 				double dy = Double.parseDouble(cn1[1]);
 				double dz = Double.parseDouble(cn1[2]);
-				double[] d = {dx, dy, dz};
+				double[] d = { dx, dy, dz };
 				int[] arr = converter.XYZtoRGB(d);
-				one = t.new ColorInstance(arr[0], arr[1],arr[2]);
+				one = t.new ColorInstance(arr[0], arr[1], arr[2]);
+
+				dx = Double.parseDouble(cn2[0]);
+				dy = Double.parseDouble(cn2[1]);
+				dz = Double.parseDouble(cn2[2]);
+				double[] d2 = { dx, dy, dz };
+				int[] arr2 = converter.XYZtoRGB(d2);
+				two = t.new ColorInstance(arr2[0], arr2[1], arr2[2]);
+
+				dx = Double.parseDouble(cn3[0]);
+				dy = Double.parseDouble(cn3[1]);
+				dz = Double.parseDouble(cn3[2]);
+				double[] d3 = { dx, dy, dz };
+				int[] arr3 = converter.XYZtoRGB(d3);
+				three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
+				colorModel = COLOR_MODEL.RGB;
+			} else if ("hsl".equalsIgnoreCase(args[0])) {
+				float hue = Float.parseFloat(cn1[0]);
+				float saturation = Float.parseFloat(cn1[1]);
+				float luminence = Float.parseFloat(cn1[2]);
+				int[] arr = converter.HSLtoRGB(hue, saturation, luminence);
+				one = t.new ColorInstance(arr[0], arr[1], arr[2]);
 				
-				 dx = Double.parseDouble(cn2[0]);
-				 dy = Double.parseDouble(cn2[1]);
-				 dz = Double.parseDouble(cn2[2]);
-				 double[] d2 = {dx, dy, dz};
-				 int[] arr2 = converter.LABtoRGB(d2);	
-				two = t.new ColorInstance(arr2[0], arr2[1],arr2[2]);
-				
-				 dx = Double.parseDouble(cn3[0]);
-				 dy = Double.parseDouble(cn3[1]);
-				 dz = Double.parseDouble(cn3[2]);
-				 double[] d3 = {dx, dy, dz};
-				 int[] arr3 = converter.LABtoRGB(d3);
-				 three = t.new ColorInstance(arr3[0], arr3[1],arr3[2]);
-				 colorModel = COLOR_MODEL.RGB;
+				hue = Float.parseFloat(cn2[0]);
+				saturation = Float.parseFloat(cn2[1]);
+				luminence = Float.parseFloat(cn2[2]);
+				int[] arr2 = converter.HSLtoRGB(hue, saturation, luminence);
+				two = t.new ColorInstance(arr2[0], arr2[1], arr2[2]);
+
+				hue = Float.parseFloat(cn3[0]);
+				saturation = Float.parseFloat(cn3[1]);
+				luminence = Float.parseFloat(cn3[2]);
+				int[] arr3 = converter.HSLtoRGB(hue, saturation, luminence);
+				three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
+				colorModel = COLOR_MODEL.RGB;
 			}
-		}else{
+		} else {
 			System.out.println("Incorrect input parameters, continuing with default values:");
 			colorModel = COLOR_MODEL.RGB;
-			NUMBER_OF_BITS = 9;
+			NUMBER_OF_BITS = 10;
 			one = t.new ColorInstance(134, 34, 123);
 			two = t.new ColorInstance(180, 60, 155);
 			three = t.new ColorInstance(230, 90, 200);
@@ -129,23 +171,22 @@ public class Colors {
 
 		/* will generate color map and color scale */
 		colorMap(COLOR_MODEL.RGB, one, two, three, NUMBER_OF_BITS);
-		
+
 	}
 
-	static void printColorInstances(){
+	static void printColorInstances() {
 		System.out.println("C-1: " + one.x + "," + one.y + "," + one.z);
 		System.out.println("C0: " + two.x + "," + two.y + "," + two.z);
 		System.out.println("C+1: " + three.x + "," + three.y + "," + three.z);
 	}
-	
-	static void printColorModel(){
+
+	static void printColorModel() {
 		System.out.println("Color Model" + colorModel);
 	}
-	
-	static void printNumberOfBits(){
+
+	static void printNumberOfBits() {
 		System.out.println("Number of bits for color map: " + NUMBER_OF_BITS);
 	}
-
 
 	static HashMap<Double, Double> colorScale(double one, double two, int min, int max, HashMap<Double, Double> channel) {
 		double cnx_range = (two - one);
@@ -193,194 +234,176 @@ public class Colors {
 		switch (colorModel) {
 		case RGB: {
 			splitBitsByColorChannel(colorModel);
-			/* 
-			 * xChannel - color scale between [-1,1] 
-			 * xChannelBucket - color bins in color map 
-			 * */
+			/*
+			 * xChannel - color scale between [-1,1] xChannelBucket - color bins
+			 * in color map
+			 */
 			HashMap<Double, Double> xChannel = new LinkedHashMap<Double, Double>();
 			HashMap<Integer, Double> xChannelBucket = new HashMap<Integer, Double>();
-			//System.out.println("X Channel: ");
+			// System.out.println("X Channel: ");
 			colorScale(one.x, two.x, -1, 0, xChannel);
 			colorScale(two.x, three.x, 0, 1, xChannel);
-			//printMap(xChannel);
+			// printMap(xChannel);
 			int x_range = three.x - one.x;
 			COLOR_MAP.x_buckets = x_range / (int) Math.pow(2, COLOR_MAP.x_bits);
 			calculateChannelBucket(one.x, three.x, COLOR_MAP.x_buckets, xChannel, xChannelBucket);
-			//printMap(xChannelBucket);
+			// printMap(xChannelBucket);
 
 			HashMap<Double, Double> yChannel = new HashMap<Double, Double>();
 			HashMap<Integer, Double> yChannelBucket = new HashMap<Integer, Double>();
-			//System.out.println("Y Channel: ");
+			// System.out.println("Y Channel: ");
 			yChannel = colorScale(one.y, two.y, -1, 0, yChannel);
 			yChannel = colorScale(two.y, three.y, 0, 1, yChannel);
-			//printMap(yChannel);
+			// printMap(yChannel);
 			int y_range = three.y - one.y;
 			COLOR_MAP.y_buckets = y_range / (int) Math.pow(2, COLOR_MAP.y_bits);
 			calculateChannelBucket(one.y, three.y, COLOR_MAP.y_buckets, yChannel, yChannelBucket);
-			//System.out.println("Y Color Channel: ");
-			//printMap(yChannelBucket);
+			// System.out.println("Y Color Channel: ");
+			// printMap(yChannelBucket);
 
 			HashMap<Double, Double> zChannel = new HashMap<Double, Double>();
 			HashMap<Integer, Double> zChannelBucket = new HashMap<Integer, Double>();
-			//System.out.println("Z Channel: ");
+			// System.out.println("Z Channel: ");
 			zChannel = colorScale(one.z, two.z, -1, 0, zChannel);
 			zChannel = colorScale(two.z, three.z, 0, 1, zChannel);
-			//printMap(zChannel);
+			// printMap(zChannel);
 			int z_range = three.z - one.z;
 			COLOR_MAP.z_buckets = z_range / (int) Math.pow(2, COLOR_MAP.z_bits);
 			calculateChannelBucket(one.z, three.z, COLOR_MAP.z_buckets, zChannel, zChannelBucket);
-			//System.out.println("Z Color Channel: ");
-			//printMap(zChannelBucket);
+			// System.out.println("Z Color Channel: ");
+			// printMap(zChannelBucket);
 
 			generateColorSets(xChannelBucket, yChannelBucket, zChannelBucket);
 			saveChannelIntensities(xChannel, yChannel, zChannel);
 			visualizeColorScale(xChannel, yChannel, zChannel);
-			
-			/*calculating combined color scale intensities */
+
+			/* calculating combined color scale intensities */
 			ArrayList<Double> value_a = new ArrayList<Double>();
 			ArrayList<Double> color_x = new ArrayList<Double>();
 			ArrayList<Double> color_y = new ArrayList<Double>();
 			ArrayList<Double> color_z = new ArrayList<Double>();
-			double interval_x1 = 0,interval_y1 = 0,interval_z1 = 0;
-			double interval_x2 = 0,interval_y2 = 0,interval_z2 = 0;
-			boolean flag1  = false, flag2 = false;
-			//x-channel
+			double interval_x1 = 0, interval_y1 = 0, interval_z1 = 0;
+			double interval_x2 = 0, interval_y2 = 0, interval_z2 = 0;
+			boolean flag1 = false, flag2 = false;
+			// x-channel
 			for (Entry e : xChannel.entrySet()) {
-				if(Math.abs((Double)e.getValue()+1)<0.00000001)
-				{
+				if (Math.abs((Double) e.getValue() + 1) < 0.00000001) {
 					flag1 = true;
 					continue;
 				}
-				if(flag1)
-				{
-					interval_x1 = (Double)e.getValue()+1;
+				if (flag1) {
+					interval_x1 = (Double) e.getValue() + 1;
 					flag1 = false;
 				}
-				if(Math.abs((Double)e.getValue())<0.00000001)
-				{
+				if (Math.abs((Double) e.getValue()) < 0.00000001) {
 					flag2 = true;
 					continue;
 				}
-				if(flag2)
-				{
-					interval_x2 = (Double)e.getValue();
+				if (flag2) {
+					interval_x2 = (Double) e.getValue();
 					flag2 = false;
 					break;
 				}
 			}
-			//y-channel
+			// y-channel
 			for (Entry e : yChannel.entrySet()) {
-				if(Math.abs((Double)e.getValue()+1)<0.00000001)
-				{
+				if (Math.abs((Double) e.getValue() + 1) < 0.00000001) {
 					flag1 = true;
 					continue;
 				}
-				if(flag1)
-				{
-					interval_y1 = (Double)e.getValue()+1;
+				if (flag1) {
+					interval_y1 = (Double) e.getValue() + 1;
 					flag1 = false;
 				}
-				if(Math.abs((Double)e.getValue())<0.00000001)
-				{
+				if (Math.abs((Double) e.getValue()) < 0.00000001) {
 					flag2 = true;
 					continue;
 				}
-				if(flag2)
-				{
-					interval_y2 = (Double)e.getValue();
+				if (flag2) {
+					interval_y2 = (Double) e.getValue();
 					flag2 = false;
 					break;
 				}
 			}
-			//z-channel
+			// z-channel
 			for (Entry e : zChannel.entrySet()) {
-				if(Math.abs((Double)e.getValue()+1)<0.00000001)
-				{
+				if (Math.abs((Double) e.getValue() + 1) < 0.00000001) {
 					flag1 = true;
 					continue;
 				}
-				if(flag1)
-				{
-					interval_z1 = (Double)e.getValue()+1;
+				if (flag1) {
+					interval_z1 = (Double) e.getValue() + 1;
 					flag1 = false;
 				}
-				if(Math.abs((Double)e.getValue())<0.00000001)
-				{
+				if (Math.abs((Double) e.getValue()) < 0.00000001) {
 					flag2 = true;
 					continue;
 				}
-				if(flag2)
-				{
-					interval_z2 = (Double)e.getValue();
+				if (flag2) {
+					interval_z2 = (Double) e.getValue();
 					flag2 = false;
 					break;
 				}
 			}
-			
-			
-			//combine and save to file
-			for(int i = 0;i<(int)Math.pow(2,NUMBER_OF_BITS);i++)
-			{
-				double value = -1.0+2.0*i/(Math.pow(2, NUMBER_OF_BITS));
+
+			// combine and save to file
+			for (int i = 0; i < (int) Math.pow(2, NUMBER_OF_BITS); i++) {
+				double value = -1.0 + 2.0 * i / (Math.pow(2, NUMBER_OF_BITS));
 				value_a.add(value);
-				
-				if(value<=0)
-				{
-					double x = 0,y = 0,z = 0;
+
+				if (value <= 0) {
+					double x = 0, y = 0, z = 0;
 					for (Entry e : xChannel.entrySet()) {
-						if(Math.abs(value - (Double)e.getValue())<interval_x1/2)
-							x = (Double)e.getKey();
+						if (Math.abs(value - (Double) e.getValue()) < interval_x1 / 2)
+							x = (Double) e.getKey();
 					}
 					for (Entry e : yChannel.entrySet()) {
-						if(Math.abs(value - (Double)e.getValue())<interval_y1/2)
-							y = (Double)e.getKey();
+						if (Math.abs(value - (Double) e.getValue()) < interval_y1 / 2)
+							y = (Double) e.getKey();
 					}
 					for (Entry e : zChannel.entrySet()) {
-						if(Math.abs(value - (Double)e.getValue())<interval_z1/2)
-							z = (Double)e.getKey();
+						if (Math.abs(value - (Double) e.getValue()) < interval_z1 / 2)
+							z = (Double) e.getKey();
 					}
 					color_x.add(x);
 					color_y.add(y);
 					color_z.add(z);
 				}
-				
-				else
-				{
-					double x = 0,y = 0,z = 0;
+
+				else {
+					double x = 0, y = 0, z = 0;
 					for (Entry e : xChannel.entrySet()) {
-						if(Math.abs(value - (Double)e.getValue())<interval_x2/2)
-							x = (Double)e.getKey();
+						if (Math.abs(value - (Double) e.getValue()) < interval_x2 / 2)
+							x = (Double) e.getKey();
 					}
 					for (Entry e : yChannel.entrySet()) {
-						if(Math.abs(value - (Double)e.getValue())<interval_y2/2)
-							y = (Double)e.getKey();
+						if (Math.abs(value - (Double) e.getValue()) < interval_y2 / 2)
+							y = (Double) e.getKey();
 					}
 					for (Entry e : zChannel.entrySet()) {
-						if(Math.abs(value - (Double)e.getValue())<interval_z2/2)
-							z = (Double)e.getKey();
+						if (Math.abs(value - (Double) e.getValue()) < interval_z2 / 2)
+							z = (Double) e.getKey();
 					}
 					color_x.add(x);
 					color_y.add(y);
 					color_z.add(z);
 				}
-							
-				
+
 			}
-			//combine and save to file
+			// combine and save to file
 			StringBuffer cScale = new StringBuffer();
 			System.out.println("Color Scale:" + "\r\n");
-			for(int i = 0;i<value_a.size();i++)
-			{
+			for (int i = 0; i < value_a.size(); i++) {
 				double d = value_a.get(i);
 				String s = new DecimalFormat("#0.00000000").format(d) + "		";
 				System.out.print(s);
 				System.out.print(color_x.get(i) + ",");
 				System.out.print(color_y.get(i) + ",");
-				System.out.print(color_z.get(i) + "\r\n");	
-				cScale.append(s).append(color_x.get(i) + ",").append(color_y.get(i) + ",").append(color_z.get(i)+"\r\n");
+				System.out.print(color_z.get(i) + "\r\n");
+				cScale.append(s).append(color_x.get(i) + ",").append(color_y.get(i) + ",").append(color_z.get(i) + "\r\n");
 			}
 			saveFile("colorMap/rgb_color_scale", cScale);
-			
+
 		}
 		default:
 			break;
@@ -406,12 +429,10 @@ public class Colors {
 		for (Entry e : zChannel.entrySet()) {
 			z.append(e.getValue() + " " + e.getKey() + "\r\n");
 		}
-//		saveFile("colorMap/rgb_x_channel_scale", x);
-//		saveFile("colorMap/rgb_y_channel_scale", y);
-//		saveFile("colorMap/rgb_z_channel_scale", z);
+		// saveFile("colorMap/rgb_x_channel_scale", x);
+		// saveFile("colorMap/rgb_y_channel_scale", y);
+		// saveFile("colorMap/rgb_z_channel_scale", z);
 	}
-
-
 
 	static void visualizeColorScale(HashMap<Double, Double> xChannel, HashMap<Double, Double> yChannel, HashMap<Double, Double> zChannel) {
 		// IplImage image = new IplImage();
@@ -468,7 +489,7 @@ public class Colors {
 				}
 			}
 		}
-		//saveFile("colorMap/rgb_", b);
+		// saveFile("colorMap/rgb_", b);
 		saveFile("colorMap/rgb_colors_", colors);
 	}
 
@@ -540,104 +561,110 @@ public class Colors {
 			this.z = z;
 		}
 	}
-	
-	/*PART 4*/
 
-//	static void captureFrame() {
-//	FrameGrabber frameGrabber = new OpenCVFrameGrabber("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/1.mp4");
-//
-//	try {
-//		frameGrabber.start();
-//		OpenCVFrameConverter.ToIplImage converter = new OpenCVFrameConverter.ToIplImage();
-//		frameGrabber.setFrameRate(30);
-//		int length = frameGrabber.getLengthInFrames();
-//		int frame_one = 8;
-//		int frame_two = 220;
-//		Frame f;
-//		Frame f1 = null;
-//		Frame f2 = null;
-//		Frame g1, g2;
-//		CanvasFrame canvas = null;
-//		while ((f = frameGrabber.grab()) != null) {
-//			if (frameGrabber.getFrameNumber() == frame_one) {
-//				f1 = f;
-//				canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
-//				canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-//				canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
-//				canvas.showImage(f);
-//
-//			} else if (frameGrabber.getFrameNumber() == frame_two) {
-//				f2 = f;
-//				canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
-//				canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-//				canvas.setCanvasSize(frameGrabber.getImageWidth(), frameGrabber.getImageHeight());
-//				canvas.showImage(f);
-//				break;
-//			}
-//		}
-//
-//		frameGrabber.stop();
-//		Mat mf1 = converter.convertToMat(f1);
-//		Mat mf2 = converter.convertToMat(f2);
-//		Mat mg1 = new Mat();
-//		Mat mg2 = new Mat();
-//		cvtColor(mf1, mg1, COLOR_BGR2GRAY);
-//		Frame gray = converter.convert(mg1);
-//		canvas.showImage(gray);
-//
-//		cvtColor(mf2, mg2, COLOR_BGR2GRAY);
-//		Frame gray2 = converter.convert(mg2);
-//		canvas.showImage(gray2);
-//
-//		IplImage diffGray = IplImage.create(converter.convert(gray).width(), converter.convert(gray).height(), IPL_DEPTH_8U, 1);
-//		IplImage iplGray = converter.convertToIplImage(gray);
-//		IplImage iplGray2 = converter.convertToIplImage(gray2);
-//
-//		cvAbsDiff(iplGray, iplGray2, diffGray);
-//
-//		CanvasFrame s = new CanvasFrame("" + frameGrabber.getFrameNumber());
-//		s.showImage(converter.convert(diffGray));
-//		Mat diffMatGray = converter.convertToMat(converter.convert(diffGray));
-//		Mat diffDestGray = new Mat();
-//		applyColorMap(diffMatGray, diffDestGray, COLORMAP_SPRING);
-//
-//		Frame finalColorMapDiff = converter.convert(diffDestGray);
-//		s.showImage(finalColorMapDiff);
-//		canvas.dispose();
-//		s.dispose();
-//
-//	} catch (Exception e) {
-//		e.printStackTrace();
-//	}
-//}
-	
-//	class Scale extends JPanel {
-//	public void paint(Graphics g) {
-//		Graphics2D g2 = (Graphics2D) g;
-//		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//		Font font = new Font("Serif", Font.PLAIN, 96);
-//		g2.setFont(font);
-//		g2.drawString("Text", 40, 120);
-//	}
-//}
-//
-//static void convertColorScale() {
-//	float[] hsbValues = new float[3];
-//
-//	hsbValues = Color.RGBtoHSB(one.x, one.y, one.z, hsbValues);
-//
-//	float hue, saturation, brightness;
-//	hue = hsbValues[0];
-//	saturation = hsbValues[1];
-//	brightness = hsbValues[2];
-//
-//	JFrame f = new JFrame();
-//	f.getContentPane().add(new Colors().new Scale());
-//	f.setSize(300, 200);
-//	f.setVisible(true);
-//	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//	Color.HSBtoRGB(hue, saturation, brightness);
-//
-//}
+	/* PART 4 */
+
+	// static void captureFrame() {
+	// FrameGrabber frameGrabber = new
+	// OpenCVFrameGrabber("/Users/kvivekanandan/Desktop/ASU/CSE_598_Multimedia_Information_Systems/sampleDataP1/1.mp4");
+	//
+	// try {
+	// frameGrabber.start();
+	// OpenCVFrameConverter.ToIplImage converter = new
+	// OpenCVFrameConverter.ToIplImage();
+	// frameGrabber.setFrameRate(30);
+	// int length = frameGrabber.getLengthInFrames();
+	// int frame_one = 8;
+	// int frame_two = 220;
+	// Frame f;
+	// Frame f1 = null;
+	// Frame f2 = null;
+	// Frame g1, g2;
+	// CanvasFrame canvas = null;
+	// while ((f = frameGrabber.grab()) != null) {
+	// if (frameGrabber.getFrameNumber() == frame_one) {
+	// f1 = f;
+	// canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
+	// canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+	// canvas.setCanvasSize(frameGrabber.getImageWidth(),
+	// frameGrabber.getImageHeight());
+	// canvas.showImage(f);
+	//
+	// } else if (frameGrabber.getFrameNumber() == frame_two) {
+	// f2 = f;
+	// canvas = new CanvasFrame("" + frameGrabber.getFrameNumber());
+	// canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+	// canvas.setCanvasSize(frameGrabber.getImageWidth(),
+	// frameGrabber.getImageHeight());
+	// canvas.showImage(f);
+	// break;
+	// }
+	// }
+	//
+	// frameGrabber.stop();
+	// Mat mf1 = converter.convertToMat(f1);
+	// Mat mf2 = converter.convertToMat(f2);
+	// Mat mg1 = new Mat();
+	// Mat mg2 = new Mat();
+	// cvtColor(mf1, mg1, COLOR_BGR2GRAY);
+	// Frame gray = converter.convert(mg1);
+	// canvas.showImage(gray);
+	//
+	// cvtColor(mf2, mg2, COLOR_BGR2GRAY);
+	// Frame gray2 = converter.convert(mg2);
+	// canvas.showImage(gray2);
+	//
+	// IplImage diffGray = IplImage.create(converter.convert(gray).width(),
+	// converter.convert(gray).height(), IPL_DEPTH_8U, 1);
+	// IplImage iplGray = converter.convertToIplImage(gray);
+	// IplImage iplGray2 = converter.convertToIplImage(gray2);
+	//
+	// cvAbsDiff(iplGray, iplGray2, diffGray);
+	//
+	// CanvasFrame s = new CanvasFrame("" + frameGrabber.getFrameNumber());
+	// s.showImage(converter.convert(diffGray));
+	// Mat diffMatGray = converter.convertToMat(converter.convert(diffGray));
+	// Mat diffDestGray = new Mat();
+	// applyColorMap(diffMatGray, diffDestGray, COLORMAP_SPRING);
+	//
+	// Frame finalColorMapDiff = converter.convert(diffDestGray);
+	// s.showImage(finalColorMapDiff);
+	// canvas.dispose();
+	// s.dispose();
+	//
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// }
+
+	// class Scale extends JPanel {
+	// public void paint(Graphics g) {
+	// Graphics2D g2 = (Graphics2D) g;
+	// g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+	// RenderingHints.VALUE_ANTIALIAS_ON);
+	// Font font = new Font("Serif", Font.PLAIN, 96);
+	// g2.setFont(font);
+	// g2.drawString("Text", 40, 120);
+	// }
+	// }
+	//
+	// static void convertColorScale() {
+	// float[] hsbValues = new float[3];
+	//
+	// hsbValues = Color.RGBtoHSB(one.x, one.y, one.z, hsbValues);
+	//
+	// float hue, saturation, brightness;
+	// hue = hsbValues[0];
+	// saturation = hsbValues[1];
+	// brightness = hsbValues[2];
+	//
+	// JFrame f = new JFrame();
+	// f.getContentPane().add(new Colors().new Scale());
+	// f.setSize(300, 200);
+	// f.setVisible(true);
+	// f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	//
+	// Color.HSBtoRGB(hue, saturation, brightness);
+	//
+	// }
 }
