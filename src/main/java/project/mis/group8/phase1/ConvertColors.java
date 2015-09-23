@@ -393,7 +393,8 @@ public class ConvertColors {
 			double p = 2.0 * l - q;
 			r1 = hue2rgb(p, q, h + 1.0 / 3.0);
 			g1 = hue2rgb(p, q, h);
-			b1 = hue2rgb(p, q, h - (1.0 / 3.0));
+			Double one_third = 1.0 / 3.0;
+			b1 = hue2rgb(p, q, h - one_third);
 			r = r1 * 255;
 			g = 255 * g1;
 			b = 255 * b1;
@@ -402,7 +403,10 @@ public class ConvertColors {
 	}
 
 	public double hue2rgb(double p, double q, double t) {
-		t = (t % 1.0);
+		if (t < 0)
+			t += 1;
+		if (t > 1)
+			t -= 1;
 		if (t < 1.0 / 6.0)
 			return p + (q - p) * 6.0 * t;
 		if (t < 1.0 / 2.0)
@@ -468,9 +472,12 @@ public class ConvertColors {
 
 	public static void main(String args[]) {
 		ConvertColors c = new ConvertColors();
-		
+
 		int[] rgb = c.HLStoRGB(60, 0.42156862774316004, 0.1627906982546693);
 		System.out.println("hls to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+
+		rgb = c.HLStoRGB(129, 0.67, 0.75);
+		System.out.println("hls to rgb 108,234,127: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
 
 		rgb = c.YUVtoRGB(0.475, -0.059, 0.014);
 		System.out.println("yuv to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
@@ -481,10 +488,10 @@ public class ConvertColors {
 		rgb = c.YCbCrtoRGB(120, 113, 130);
 		System.out.println("YCbCr to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
 
-		rgb = c.LABtoRGB(51.571,   -6.068,   19.147);
+		rgb = c.LABtoRGB(51.571, -6.068, 19.147);
 		System.out.println("lab to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
-		
-		rgb = c.XYZtoRGB(17.636525984294632,19.765390475189697,12.55841722902992);
+
+		rgb = c.XYZtoRGB(17.636525984294632, 19.765390475189697, 12.55841722902992);
 		System.out.println("xyz to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
 
 	}
