@@ -409,11 +409,11 @@ public class ConvertColors {
 		r = Math.min(r, 1.0f);
 		g = Math.min(g, 1.0f);
 		b = Math.min(b, 1.0f);
-		
-//		int alphaInt = (int) (255 * alpha);
-//
-//		return (alphaInt << 24) + (r << 16) + (g << 8) + (b);
-		int[]result={(int) r,(int) g,(int) b};
+
+		// int alphaInt = (int) (255 * alpha);
+		//
+		// return (alphaInt << 24) + (r << 16) + (g << 8) + (b);
+		int[] result = { (int) r, (int) g, (int) b };
 		return result;
 	}
 
@@ -437,5 +437,20 @@ public class ConvertColors {
 		}
 
 		return p;
+	}
+
+	public int[] YUVtoRGB(double X, double Y, double Z) {
+		int[] result = new int[3];
+		return result;
+	}
+
+	public int[] YCbCrtoRGB(double X, double Y, double Z) {
+		int[] result = new int[3];
+		return result;
+	}
+
+	public int[] YIQtoRGB(double X, double Y, double Z) {
+		int[] result = new int[3];
+		return result;
 	}
 }
