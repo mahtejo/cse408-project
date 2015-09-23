@@ -59,7 +59,8 @@ public class Colors {
 	}
 
 	/* example input */
-	/* input format cmd args: colormodel b x1,y1,z1 x2,y2,z2 x3,y3,z3
+	/*
+	 * input format cmd args: colormodel b x1,y1,z1 x2,y2,z2 x3,y3,z3
 	 * 
 	 * rgb 9 90,90,90 127,122,230 230,180,221
 	 * 
@@ -105,8 +106,6 @@ public class Colors {
 		colorMap(COLOR_MODEL.RGB, one, two, three, NUMBER_OF_BITS);
 
 	}
-
-
 
 	static HashMap<Double, Double> colorScale(double one, double two, int min, int max, HashMap<Double, Double> channel) {
 		double cnx_range = (two - one);
@@ -195,7 +194,7 @@ public class Colors {
 
 			generateColorSets(xChannelBucket, yChannelBucket, zChannelBucket);
 			generateAndVisualizeColorScale();
-			
+
 		}
 		default:
 			break;
@@ -247,7 +246,7 @@ public class Colors {
 			System.out.print(color_z.get(i) + "\r\n");
 			cScale.append(s).append(color_x.get(i) + ",").append(color_y.get(i) + ",").append(color_z.get(i) + "\r\n");
 		}
-		
+
 		saveFile("colorMap/rgb_color_scale", cScale);
 
 		IplImage whiteImg = IplImage.create(100, (int) Math.pow(2, NUMBER_OF_BITS), IPL_DEPTH_8U, 3);
@@ -261,8 +260,6 @@ public class Colors {
 		cvShowImage("", whiteImg);
 		cvWaitKey(0);
 	}
-
-
 
 	/**
 	 * @param xChannelBucket
@@ -326,7 +323,7 @@ public class Colors {
 		COLOR_MAP.y_buckets = (int) (Math.pow(2, colorModel.getYbits()) / boxWidthY);
 		COLOR_MAP.z_buckets = (int) (Math.pow(2, colorModel.getZbits()) / boxWidthZ);
 	}
-	
+
 	static void saveFile(String fileName, StringBuffer b) {
 		File cMap;
 		BufferedWriter bWriter = null;
@@ -359,7 +356,8 @@ public class Colors {
 				}
 		}
 	}
-	static void convertToRGB(String[] args, Colors t){
+
+	static void convertToRGB(String[] args, Colors t) {
 		ConvertColors converter = new ConvertColors();
 		String[] cn1 = args[2].split(",");
 		String[] cn2 = args[3].split(",");
@@ -417,23 +415,23 @@ public class Colors {
 			int[] arr3 = converter.XYZtoRGB(d3);
 			three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
 			colorModel = COLOR_MODEL.RGB;
-		} else if ("hsl".equalsIgnoreCase(args[0])) {
+		} else if ("hls".equalsIgnoreCase(args[0])) {
 			float hue = Float.parseFloat(cn1[0]);
-			float saturation = Float.parseFloat(cn1[1]);
-			float luminence = Float.parseFloat(cn1[2]);
-			int[] arr = converter.HSLtoRGB(hue, saturation, luminence);
+			float luminence = Float.parseFloat(cn1[1]);
+			float saturation = Float.parseFloat(cn1[2]);
+			int[] arr = converter.HLStoRGB(hue, luminence, saturation);
 			one = t.new ColorInstance(arr[0], arr[1], arr[2]);
 
 			hue = Float.parseFloat(cn2[0]);
 			saturation = Float.parseFloat(cn2[1]);
 			luminence = Float.parseFloat(cn2[2]);
-			int[] arr2 = converter.HSLtoRGB(hue, saturation, luminence);
+			int[] arr2 = converter.HLStoRGB(hue, luminence, saturation);
 			two = t.new ColorInstance(arr2[0], arr2[1], arr2[2]);
 
 			hue = Float.parseFloat(cn3[0]);
 			saturation = Float.parseFloat(cn3[1]);
 			luminence = Float.parseFloat(cn3[2]);
-			int[] arr3 = converter.HSLtoRGB(hue, saturation, luminence);
+			int[] arr3 = converter.HLStoRGB(hue, luminence, saturation);
 			three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
 			colorModel = COLOR_MODEL.RGB;
 		} else if ("yuv".equalsIgnoreCase(args[0])) {
@@ -501,6 +499,7 @@ public class Colors {
 			colorModel = COLOR_MODEL.RGB;
 		}
 	}
+
 	/**
 	 * @param xChannel
 	 * @param yChannel
@@ -519,11 +518,11 @@ public class Colors {
 		for (Entry e : zChannel.entrySet()) {
 			z.append(e.getValue() + " " + e.getKey() + "\r\n");
 		}
-		 saveFile("colorMap/rgb_x_channel_scale", x);
-		 saveFile("colorMap/rgb_y_channel_scale", y);
-		 saveFile("colorMap/rgb_z_channel_scale", z);
+		saveFile("colorMap/rgb_x_channel_scale", x);
+		saveFile("colorMap/rgb_y_channel_scale", y);
+		saveFile("colorMap/rgb_z_channel_scale", z);
 	}
-	
+
 	class ColorInstance {
 		int x;
 		int y;
@@ -549,13 +548,13 @@ public class Colors {
 	static void printNumberOfBits() {
 		System.out.println("Number of bits for color map: " + NUMBER_OF_BITS);
 	}
-	
+
 	static void printMap(Map<?, ?> map) {
 		for (Entry e : map.entrySet()) {
 			System.out.println(e.getKey() + " " + e.getValue());
 		}
 	}
-	
+
 	// static void visualizeColorScale(HashMap<Double, Double> xChannel,
 	// HashMap<Double, Double> yChannel, HashMap<Double, Double> zChannel) {
 	// ColorScale grid = new ColorScale();

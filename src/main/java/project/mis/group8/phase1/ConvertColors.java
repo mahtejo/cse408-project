@@ -2,6 +2,7 @@
  * @author kvivekanandan
  * Sep 20, 2015
  * ConvertColors.java
+ * modified from http://rsb.info.nih.gov/ij/plugins/download/Color_Space_Converter.java
  */
 
 package project.mis.group8.phase1;
@@ -360,10 +361,6 @@ public class ConvertColors {
 		return XYZtoRGB(XYZ[0], XYZ[1], XYZ[2]);
 	}
 
-	public int[] HSLtoRGB(float h, float s, float l) {
-		return toRGB(h, s, l, 1.0f);
-	}
-
 	/**
 	 * Convert HSL values to an ARGB Color.
 	 *
@@ -377,80 +374,118 @@ public class ConvertColors {
 	 *            the alpha value between 0 - 1
 	 * @return the ARGB value of this color
 	 */
-	public int[] toRGB(float h, float s, float l, float alpha) {
-		if (s < 0.0f || s > 1.0f) {
-			String message = "Color parameter outside of expected range - Saturation (" + s + ")";
-			throw new IllegalArgumentException(message);
+	public int[] HLStoRGB(double h, double l, double s) {
+		Double r = 0.0, g = 0.0, b = 0.0;
+		Double r1 = 0.0, g1 = 0.0, b1 = 0.0;
+		if (s == 0) {
+			r = g = b = l; // achromatic
+		} else {
+			if (h > 1) {
+				h = (h / 360.0);
+			}
+			if (s > 1) {
+				s = (s / 100.0);
+			}
+			if (l > 1) {
+				l = (l / 100.0);
+			}
+			double q = (l <= 0.5 ? l * (1.0 + s) : l + s - l * s);
+			double p = 2.0 * l - q;
+			r1 = hue2rgb(p, q, h + 1.0 / 3.0);
+			g1 = hue2rgb(p, q, h);
+			b1 = hue2rgb(p, q, h - (1.0 / 3.0));
+			r = r1 * 255;
+			g = 255 * g1;
+			b = 255 * b1;
 		}
-
-		if (l < 0.0f || l > 1.0f) {
-			String message = "Color parameter outside of expected range - Luminance (" + l + ")";
-			throw new IllegalArgumentException(message);
-		}
-
-		if (alpha < 0.0f || alpha > 1.0f) {
-			String message = "Color parameter outside of expected range - Alpha (" + alpha + ")";
-			throw new IllegalArgumentException(message);
-		}
-
-		float q = 0;
-
-		if (l < 0.5)
-			q = l * (1 + s);
-		else
-			q = (l + s) - (s * l);
-
-		float p = 2 * l - q;
-
-		float r = (255 * Math.max(0, HueToRGB(p, q, h + (1.0f / 3.0f))));
-		float g = (255 * Math.max(0, HueToRGB(p, q, h)));
-		float b = (255 * Math.max(0, HueToRGB(p, q, h - (1.0f / 3.0f))));
-
-		r = Math.min(r, 1.0f);
-		g = Math.min(g, 1.0f);
-		b = Math.min(b, 1.0f);
-
-		// int alphaInt = (int) (255 * alpha);
-		//
-		// return (alphaInt << 24) + (r << 16) + (g << 8) + (b);
-		int[] result = { (int) r, (int) g, (int) b };
-		return result;
+		return new int[] { (int) Math.round(r1 * 255), (int) Math.round(g1 * 255), (int) Math.round(b1 * 255) };
 	}
 
-	private static float HueToRGB(float p, float q, float h) {
-		if (h < 0)
-			h += 1;
-
-		if (h > 1)
-			h -= 1;
-
-		if (6 * h < 1) {
-			return p + ((q - p) * 6 * h);
-		}
-
-		if (2 * h < 1) {
+	public double hue2rgb(double p, double q, double t) {
+		t = (t % 1.0);
+		if (t < 1.0 / 6.0)
+			return p + (q - p) * 6.0 * t;
+		if (t < 1.0 / 2.0)
 			return q;
-		}
-
-		if (3 * h < 2) {
-			return p + ((q - p) * 6 * ((2.0f / 3.0f) - h));
-		}
+		if (t < 2.0 / 3.0)
+			return p + (q - p) * ((2.0 / 3.0) - t) * 6.0;
 
 		return p;
+
 	}
 
-	public int[] YUVtoRGB(double X, double Y, double Z) {
+	public int[] YUVtoRGB(double y, double u, double v) {
 		int[] result = new int[3];
+
+		int r = (int) ((y + 1.403 * v) * 256);
+		int g = (int) ((y - 0.344 * u - 0.714 * v) * 256);
+		int b = (int) ((y + 1.770 * u) * 256);
+
+		result[0] = r;
+		result[1] = g;
+		result[2] = b;
 		return result;
 	}
 
-	public int[] YCbCrtoRGB(double X, double Y, double Z) {
+	public int[] YCbCrtoRGB(double y, double cb, double cr) {
 		int[] result = new int[3];
+
+		Double r = y + 1.402 * (cr - 128);
+		Double g = y - 0.34414 * (cb - 128) - 0.71414 * (cr - 128);
+		Double b = y + 1.772 * (cb - 128);
+		result[0] = r.intValue();
+		result[1] = g.intValue();
+		result[2] = b.intValue();
 		return result;
 	}
 
-	public int[] YIQtoRGB(double X, double Y, double Z) {
+	public int[] YIQtoRGB(double y, double i, double q) {
 		int[] result = new int[3];
+		Double r = (y + 0.948262 * i + 0.624013 * q);
+		Double g = (y - 0.276066 * i - 0.639810 * q);
+		Double b = (y - 1.105450 * i + 1.729860 * q);
+		if (r < 0.0)
+			r = 0.0;
+		if (g < 0.0)
+			g = 0.0;
+		if (b < 0.0)
+			b = 0.0;
+		if (r > 1.0)
+			r = 1.0;
+		if (g > 1.0)
+			g = 1.0;
+		if (b > 1.0)
+			b = 1.0;
+
+		r = r * 256;
+		g = g * 256;
+		b = b * 256;
+		result[0] = r.intValue();
+		result[1] = g.intValue();
+		result[2] = b.intValue();
 		return result;
+	}
+
+	public static void main(String args[]) {
+		ConvertColors c = new ConvertColors();
+		
+		int[] rgb = c.HLStoRGB(60, 0.42156862774316004, 0.1627906982546693);
+		System.out.println("hls to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+
+		rgb = c.YUVtoRGB(0.475, -0.059, 0.014);
+		System.out.println("yuv to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+
+		rgb = c.YIQtoRGB(0.475, 0.044, -0.043);
+		System.out.println("YIQ to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+
+		rgb = c.YCbCrtoRGB(120, 113, 130);
+		System.out.println("YCbCr to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+
+		rgb = c.LABtoRGB(51.571,   -6.068,   19.147);
+		System.out.println("lab to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+		
+		rgb = c.XYZtoRGB(17.636525984294632,19.765390475189697,12.55841722902992);
+		System.out.println("xyz to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+
 	}
 }
