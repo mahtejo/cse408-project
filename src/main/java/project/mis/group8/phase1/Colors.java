@@ -140,47 +140,6 @@ public class Colors {
 	static void colorMap(COLOR_MODEL colorModel, ColorInstance one, ColorInstance two, ColorInstance three, int number_bits) {
 		switch (colorModel) {
 		case RGB: {
-			splitBitsByColorChannel(colorModel);
-			/*
-			 * xChannel - color scale between [-1,1] xChannelBucket - color bins
-			 * in color map
-			 */
-			HashMap<Double, Double> xChannel = new LinkedHashMap<Double, Double>();
-			HashMap<Integer, Double> xChannelBucket = new HashMap<Integer, Double>();
-			// System.out.println("X Channel: ");
-			colorScale(one.x, two.x, -1, 0, xChannel);
-			colorScale(two.x, three.x, 0, 1, xChannel);
-			// printMap(xChannel);
-			int x_range = three.x - one.x;
-			COLOR_MAP.x_buckets = x_range / (int) Math.pow(2, COLOR_MAP.x_bits);
-			calculateChannelBucket(one.x, three.x, COLOR_MAP.x_buckets, xChannel, xChannelBucket);
-			// printMap(xChannelBucket);
-
-			HashMap<Double, Double> yChannel = new HashMap<Double, Double>();
-			HashMap<Integer, Double> yChannelBucket = new HashMap<Integer, Double>();
-			// System.out.println("Y Channel: ");
-			yChannel = colorScale(one.y, two.y, -1, 0, yChannel);
-			yChannel = colorScale(two.y, three.y, 0, 1, yChannel);
-			// printMap(yChannel);
-			int y_range = three.y - one.y;
-			COLOR_MAP.y_buckets = y_range / (int) Math.pow(2, COLOR_MAP.y_bits);
-			calculateChannelBucket(one.y, three.y, COLOR_MAP.y_buckets, yChannel, yChannelBucket);
-			// System.out.println("Y Color Channel: ");
-			// printMap(yChannelBucket);
-
-			HashMap<Double, Double> zChannel = new HashMap<Double, Double>();
-			HashMap<Integer, Double> zChannelBucket = new HashMap<Integer, Double>();
-			// System.out.println("Z Channel: ");
-			zChannel = colorScale(one.z, two.z, -1, 0, zChannel);
-			zChannel = colorScale(two.z, three.z, 0, 1, zChannel);
-			// printMap(zChannel);
-			int z_range = three.z - one.z;
-			COLOR_MAP.z_buckets = z_range / (int) Math.pow(2, COLOR_MAP.z_bits);
-			calculateChannelBucket(one.z, three.z, COLOR_MAP.z_buckets, zChannel, zChannelBucket);
-			// System.out.println("Z Color Channel: ");
-			// printMap(zChannelBucket);
-
-			generateColorSets(xChannelBucket, yChannelBucket, zChannelBucket);
 			generateAndVisualizeColorScale();
 
 		}
@@ -188,6 +147,20 @@ public class Colors {
 			break;
 		}
 
+	}
+	
+	static void WriteFile(String filename, boolean app, String str)
+	{
+		try 
+		{
+			FileWriter fw = new FileWriter(filename,app);
+			fw.write(str);
+			fw.close();
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
 	}
 
 	static void generateAndVisualizeColorScale() {
@@ -223,24 +196,18 @@ public class Colors {
 			}
 		}
 
-		StringBuffer cScale = new StringBuffer();
-		System.out.println("Color Scale:" + "\r\n");
-		for (int i = 0; i < value_a.size(); i++) {
-			double d = value_a.get(i);
-			String s = new DecimalFormat("#0.00000000").format(d) + "		";
-			System.out.print(s);
-			System.out.print(color_x.get(i) + ",");
-			System.out.print(color_y.get(i) + ",");
-			System.out.print(color_z.get(i) + "\r\n");
-			cScale.append(s).append(color_x.get(i) + ",").append(color_y.get(i) + ",").append(color_z.get(i) + "\r\n");
+		String filename = String.format("D:\\YuhanSun\\598\\rgb_%d-%d-%d_%d-%d-%d_%d-%d-%d.txt", one.x,one.y,one.z,two.x,two.y,two.z,three.x,three.y,three.z);
+		WriteFile(filename,false,"ColorMAP: RGB number of bits: "+NUMBER_OF_BITS+"\n");
+		for(int i = 0;i<=Math.pow(2, NUMBER_OF_BITS);i++)
+		{
+			WriteFile(filename,true,"ColorID:"+" "+i+"	"+color_x.get(i)+"  "+color_y.get(i)+"  "+color_z.get(i)+"\n");
 		}
-
-		saveFile("colorMap/rgb_color_scale", cScale);
-
-		IplImage whiteImg = IplImage.create(100, (int) Math.pow(2, NUMBER_OF_BITS), IPL_DEPTH_8U, 3);
+		
+		IplImage whiteImg = IplImage.create(200, (int) Math.pow(2, NUMBER_OF_BITS), IPL_DEPTH_8U, 3);
 		for (int i = 0; i < Math.pow(2, NUMBER_OF_BITS); i++) {
-			CvScalar Minc = cvScalar(color_x.get(i), color_y.get(i), color_z.get(i), 0);
-			for (int j = 0; j < 100; j++) {
+			//BＧＲ is the input format to cvScalar
+			CvScalar Minc = cvScalar(color_z.get(i), color_y.get(i), color_x.get(i), 0);
+			for (int j = 0; j < 200; j++) {
 				opencv_core.cvSet2D(whiteImg, i, j, Minc);
 			}
 		}
@@ -291,7 +258,8 @@ public class Colors {
 				}
 			}
 		}
-		saveFile("colorMap/rgb_colors_", colors);
+		saveFile("d:\\YuhanSun\\598\\rgb_colors_", colors);
+//		saveFile("d:\\YuhanSun\\598\\rgb_colors_"+one.x+"_"+one.y+"_"+one.z+two.x+"_"+two.y+"_"+two.z+three.x+"_"+three.y+"_"+three.z+".txt",colors);
 	}
 
 	static void splitBitsByColorChannel(COLOR_MODEL colorModel) {
