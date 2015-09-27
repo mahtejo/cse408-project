@@ -49,11 +49,12 @@ public class ConvertColors {
 		return XYZtoRGB(LABtoXYZ(Lab));
 	}
 
-	/**http://www.easyrgb.com/index.php?X=MATH&H=08#text8
-	 * Convert LAB to XYZ.
+	/**
+	 * http://www.easyrgb.com/index.php?X=MATH&H=08#text8 Convert LAB to XYZ.
 	 * 
-	 * @param L <=0 L <=100
-	 * @param a 
+	 * @param L
+	 *            <=0 L <=100
+	 * @param a
 	 * @param b
 	 * @return XYZ values
 	 */
@@ -103,9 +104,12 @@ public class ConvertColors {
 	/**
 	 * Convert XYZ to LAB.
 	 * 
-	 * @param X 0 <= X <= 95.0429
-	 * @param Y 0 <= Y <= 100
-	 * @param Z 0 <= Z <= 108.89
+	 * @param X
+	 *            0 <= X <= 95.0429
+	 * @param Y
+	 *            0 <= Y <= 100
+	 * @param Z
+	 *            0 <= Z <= 108.89
 	 * @return Lab values
 	 */
 	public double[] XYZtoLAB(double X, double Y, double Z) {
@@ -152,7 +156,7 @@ public class ConvertColors {
 	/**
 	 * Convert XYZ to RGB.
 	 * 
-	 * @param X 
+	 * @param X
 	 * @param Y
 	 * @param Z
 	 * @return RGB in int array.
@@ -201,11 +205,12 @@ public class ConvertColors {
 	/**
 	 * Convert XYZ to RGB
 	 * 
-	 * @param X 0 <= X <= 95.0429
-	 * @param Y 0 <= Y <= 100
-	 * @param Z 0 <= Z <= 108.89
-	 * Illuminant D65
-	 * Observer 2 deg
+	 * @param X
+	 *            0 <= X <= 95.0429
+	 * @param Y
+	 *            0 <= Y <= 100
+	 * @param Z
+	 *            0 <= Z <= 108.89 Illuminant D65 Observer 2 deg
 	 */
 	public int[] XYZtoRGB(double[] XYZ) {
 		return XYZtoRGB(XYZ[0], XYZ[1], XYZ[2]);
@@ -270,18 +275,29 @@ public class ConvertColors {
 
 	public int[] YUVtoRGB(double y, double u, double v) {
 		int[] result = new int[3];
+		//
+		// int r = (int) ((y + 1.403 * v) * 256);
+		// int g = (int) ((y - 0.344 * u - 0.714 * v) * 256);
+		// int b = (int) ((y + 1.770 * u) * 256);
 
-//		int r = (int) ((y + 1.403 * v) * 256);
-//		int g = (int) ((y - 0.344 * u - 0.714 * v) * 256);
-//		int b = (int) ((y + 1.770 * u) * 256);
+		// Double r = ((y + 1.28033 * v) * 255);
+		// Double g = ((y - 0.21482 * u - 0.38059 * v) * 255);
+		// Double b = ((y + 2.12798 * u) * 255);
 
-		Double r = ((y + 1.28033 * v) * 255);
-		Double g = ((y - 0.21482 * u - 0.38059 * v) * 255);
-		Double b = ((y + 2.12798 * u) * 255);
-		
+		Double r = y + 1.4075 * (v - 128);
+		Double g = y - 0.3455 * (u - 128) - (0.7169 * (v - 128));
+		Double b = y + 1.7790 * (u - 128);
+
 		result[0] = r.intValue();
 		result[1] = g.intValue();
 		result[2] = b.intValue();
+
+		if (result[0] < 0)
+			result[0] = 0;
+		if (result[1] < 0)
+			result[1] = 0;
+		if (result[2] < 0)
+			result[2] = 0;
 		return result;
 	}
 
@@ -297,9 +313,9 @@ public class ConvertColors {
 		return result;
 	}
 
-	//# YIQ: used by composite video signals (linear combinations of RGB)
-	//# Y: perceived grey level (0.0 == black, 1.0 == white)
-	//# I, Q: color components
+	// # YIQ: used by composite video signals (linear combinations of RGB)
+	// # Y: perceived grey level (0.0 == black, 1.0 == white)
+	// # I, Q: color components
 	public int[] YIQtoRGB(double y, double i, double q) {
 		int[] result = new int[3];
 		Double r = (y + 0.948262 * i + 0.624013 * q);
@@ -344,11 +360,9 @@ public class ConvertColors {
 
 		rgb = c.LABtoRGB(51.571, -6.068, 19.147);
 		System.out.println("lab to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
-		
 
 		rgb = c.LABtoRGB(100, 5, 10);
 		System.out.println("lab to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
-
 
 		rgb = c.XYZtoRGB(17.6365, 19.7653, 12.5584);
 		System.out.println("xyz to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);

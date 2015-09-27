@@ -1,0 +1,18 @@
+ColorMAP: RGB number of bits: 4
+ColorID: 0	97  -20  115
+ColorID: 1	112  8  102
+ColorID: 2	128  37  89
+ColorID: 3	144  66  76
+ColorID: 4	160  95  64
+ColorID: 5	176  123  51
+ColorID: 6	192  152  38
+ColorID: 7	208  181  25
+ColorID: 8	224  210  13
+ColorID: 9	183  207  6
+ColorID: 10	142  205  0
+ColorID: 11	101  202  -6
+ColorID: 12	61  200  -12
+ColorID: 13	20  197  -18
+ColorID: 14	-20  195  -25
+ColorID: 15	-61  192  -31
+ColorID: 16	-102  190  -38

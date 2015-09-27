@@ -27,10 +27,12 @@ import org.bytedeco.javacpp.opencv_core.IplImage;
 public class Colors {
 
 	public static int NUMBER_OF_BITS = 10;
+	public static String INPUT_COLOR_MODEL;
 	public static ColorMap COLOR_MAP;
 	public static ColorInstance one;
 	public static ColorInstance two;
 	public static ColorInstance three;
+	public static ColorInstanceInput inputOne,inputTwo,inputThree;
 	public static COLOR_MODEL colorModel;
 
 	enum COLOR_MODEL {
@@ -195,8 +197,8 @@ public class Colors {
 				color_z.add(z);
 			}
 		}
-
-		String filename = String.format("D:\\YuhanSun\\598\\rgb_%d-%d-%d_%d-%d-%d_%d-%d-%d.txt", one.x,one.y,one.z,two.x,two.y,two.z,three.x,three.y,three.z);
+		String f = inputOne.toString()+"_" + inputTwo.toString() + "_" + inputThree.toString();
+		String filename = String.format("colorMap/"+INPUT_COLOR_MODEL+"_"+NUMBER_OF_BITS+"_"+f+".txt");
 		WriteFile(filename,false,"ColorMAP: RGB number of bits: "+NUMBER_OF_BITS+"\n");
 		for(int i = 0;i<=Math.pow(2, NUMBER_OF_BITS);i++)
 		{
@@ -258,8 +260,7 @@ public class Colors {
 				}
 			}
 		}
-		saveFile("d:\\YuhanSun\\598\\rgb_colors_", colors);
-//		saveFile("d:\\YuhanSun\\598\\rgb_colors_"+one.x+"_"+one.y+"_"+one.z+two.x+"_"+two.y+"_"+two.z+three.x+"_"+three.y+"_"+three.z+".txt",colors);
+		saveFile("colorMap/rgb_colors_", colors);
 	}
 
 	static void splitBitsByColorChannel(COLOR_MODEL colorModel) {
@@ -319,18 +320,22 @@ public class Colors {
 		String[] cn2 = args[3].split(",");
 		String[] cn3 = args[4].split(",");
 		NUMBER_OF_BITS = Integer.parseInt(args[1]);
+		inputOne = t.new ColorInstanceInput(cn1[0],cn1[1],cn1[2]);
+		inputTwo = t.new ColorInstanceInput(cn2[0],cn2[1],cn2[2]);
+		inputThree = t.new ColorInstanceInput(cn3[0],cn3[1],cn3[2]);
 
 		if ("rgb".equalsIgnoreCase(args[0])) {
 			colorModel = COLOR_MODEL.RGB;
-
+			INPUT_COLOR_MODEL = "rgb";
 			one = t.new ColorInstance(Integer.parseInt(cn1[0]), Integer.parseInt(cn1[1]), Integer.parseInt(cn1[2]));
 			two = t.new ColorInstance(Integer.parseInt(cn2[0]), Integer.parseInt(cn2[1]), Integer.parseInt(cn2[2]));
 			three = t.new ColorInstance(Integer.parseInt(cn3[0]), Integer.parseInt(cn3[1]), Integer.parseInt(cn3[2]));
 		} else if ("lab".equalsIgnoreCase(args[0])) {
-
+			INPUT_COLOR_MODEL = "lab";
 			double dx = Double.parseDouble(cn1[0]);
 			double dy = Double.parseDouble(cn1[1]);
 			double dz = Double.parseDouble(cn1[2]);
+			
 			double[] d = { dx, dy, dz };
 			int[] arr = converter.LABtoRGB(d);
 			one = t.new ColorInstance(arr[0], arr[1], arr[2]);
@@ -350,6 +355,7 @@ public class Colors {
 			three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
 			colorModel = COLOR_MODEL.RGB;
 		} else if ("xyz".equalsIgnoreCase(args[0])) {
+			INPUT_COLOR_MODEL = "xyz";
 			double dx = Double.parseDouble(cn1[0]);
 			double dy = Double.parseDouble(cn1[1]);
 			double dz = Double.parseDouble(cn1[2]);
@@ -372,6 +378,7 @@ public class Colors {
 			three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
 			colorModel = COLOR_MODEL.RGB;
 		} else if ("hls".equalsIgnoreCase(args[0])) {
+			INPUT_COLOR_MODEL = "hls";
 			float hue = Float.parseFloat(cn1[0]);
 			float luminence = Float.parseFloat(cn1[1]);
 			float saturation = Float.parseFloat(cn1[2]);
@@ -391,6 +398,7 @@ public class Colors {
 			three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
 			colorModel = COLOR_MODEL.RGB;
 		} else if ("yuv".equalsIgnoreCase(args[0])) {
+			INPUT_COLOR_MODEL = "yuv";
 			double dx = Double.parseDouble(cn1[0]);
 			double dy = Double.parseDouble(cn1[1]);
 			double dz = Double.parseDouble(cn1[2]);
@@ -412,6 +420,7 @@ public class Colors {
 			three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
 			colorModel = COLOR_MODEL.RGB;
 		} else if ("ycbcr".equalsIgnoreCase(args[0])) {
+			INPUT_COLOR_MODEL = "ycbcr";
 			double dx = Double.parseDouble(cn1[0]);
 			double dy = Double.parseDouble(cn1[1]);
 			double dz = Double.parseDouble(cn1[2]);
@@ -433,6 +442,7 @@ public class Colors {
 			three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
 			colorModel = COLOR_MODEL.RGB;
 		} else if ("yiq".equalsIgnoreCase(args[0])) {
+			INPUT_COLOR_MODEL = "yiq";
 			double dx = Double.parseDouble(cn1[0]);
 			double dy = Double.parseDouble(cn1[1]);
 			double dz = Double.parseDouble(cn1[2]);
@@ -489,6 +499,24 @@ public class Colors {
 			this.y = y;
 			this.z = z;
 		}
+	}
+	
+	class ColorInstanceInput {
+		String x;
+		String y;
+		String z;
+
+		public ColorInstanceInput(String x, String y, String z) {
+			this.x = x;
+			this.y = y;
+			this.z = z;
+		}
+
+		@Override
+		public String toString() {
+			return "" + x + "-" + y + "-" + z + "";
+		}
+		
 	}
 
 	static void printColorInstances() {
