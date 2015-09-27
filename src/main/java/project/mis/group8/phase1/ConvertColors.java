@@ -18,11 +18,6 @@ public class ConvertColors {
 	public double[] whitePoint = D65;
 
 	/**
-	 * sRGB to XYZ conversion matrix
-	 */
-	public double[][] M = { { 0.4124, 0.3576, 0.1805 }, { 0.2126, 0.7152, 0.0722 }, { 0.0193, 0.1192, 0.9505 } };
-
-	/**
 	 * XYZ to sRGB conversion matrix
 	 */
 	public double[][] Mi = { { 3.2406, -1.5372, -0.4986 }, { -0.9689, 1.8758, 0.0415 }, { 0.0557, -0.2040, 1.0570 } };
@@ -32,28 +27,6 @@ public class ConvertColors {
 	 */
 	public ConvertColors() {
 		whitePoint = D65;
-	}
-
-	/**
-	 * @param H
-	 *            Hue angle/360 (0..1)
-	 * @param S
-	 *            Saturation (0..1)
-	 * @param B
-	 *            Value (0..1)
-	 * @return RGB values
-	 */
-	public int[] HSBtoRGB(double H, double S, double B) {
-		int[] result = new int[3];
-		int rgb = Color.HSBtoRGB((float) H, (float) S, (float) B);
-		result[0] = (rgb >> 16) & 0xff;
-		result[1] = (rgb >> 8) & 0xff;
-		result[2] = (rgb >> 0) & 0xff;
-		return result;
-	}
-
-	public int[] HSBtoRGB(double[] HSB) {
-		return HSBtoRGB(HSB[0], HSB[1], HSB[2]);
 	}
 
 	/**
@@ -76,11 +49,11 @@ public class ConvertColors {
 		return XYZtoRGB(LABtoXYZ(Lab));
 	}
 
-	/**
+	/**http://www.easyrgb.com/index.php?X=MATH&H=08#text8
 	 * Convert LAB to XYZ.
 	 * 
-	 * @param L
-	 * @param a
+	 * @param L <=0 L <=100
+	 * @param a 
 	 * @param b
 	 * @return XYZ values
 	 */
@@ -128,136 +101,11 @@ public class ConvertColors {
 	}
 
 	/**
-	 * @param R
-	 *            Red in range 0..255
-	 * @param G
-	 *            Green in range 0..255
-	 * @param B
-	 *            Blue in range 0..255
-	 * @return HSB values: H is 0..360 degrees / 360 (0..1), S is 0..1, B is
-	 *         0..1
-	 */
-	public double[] RGBtoHSB(int R, int G, int B) {
-		double[] result = new double[3];
-		float[] hsb = new float[3];
-		Color.RGBtoHSB(R, G, B, hsb);
-		result[0] = hsb[0];
-		result[1] = hsb[1];
-		result[2] = hsb[2];
-		return result;
-	}
-
-	public double[] RGBtoHSB(int[] RGB) {
-		return RGBtoHSB(RGB[0], RGB[1], RGB[2]);
-	}
-
-	/**
-	 * @param R
-	 * @param G
-	 * @param B
-	 * @return Lab values
-	 */
-	public double[] RGBtoLAB(int R, int G, int B) {
-		return XYZtoLAB(RGBtoXYZ(R, G, B));
-	}
-
-	/**
-	 * @param RGB
-	 * @return Lab values
-	 */
-	public double[] RGBtoLAB(int[] RGB) {
-		return XYZtoLAB(RGBtoXYZ(RGB));
-	}
-
-	/**
-	 * Convert RGB to XYZ
-	 * 
-	 * @param R
-	 * @param G
-	 * @param B
-	 * @return XYZ in double array.
-	 */
-	public double[] RGBtoXYZ(int R, int G, int B) {
-		double[] result = new double[3];
-
-		// convert 0..255 into 0..1
-		double r = R / 255.0;
-		double g = G / 255.0;
-		double b = B / 255.0;
-
-		// assume sRGB
-		if (r <= 0.04045) {
-			r = r / 12.92;
-		} else {
-			r = Math.pow(((r + 0.055) / 1.055), 2.4);
-		}
-		if (g <= 0.04045) {
-			g = g / 12.92;
-		} else {
-			g = Math.pow(((g + 0.055) / 1.055), 2.4);
-		}
-		if (b <= 0.04045) {
-			b = b / 12.92;
-		} else {
-			b = Math.pow(((b + 0.055) / 1.055), 2.4);
-		}
-
-		r *= 100.0;
-		g *= 100.0;
-		b *= 100.0;
-
-		// [X Y Z] = [r g b][M]
-		result[0] = (r * M[0][0]) + (g * M[0][1]) + (b * M[0][2]);
-		result[1] = (r * M[1][0]) + (g * M[1][1]) + (b * M[1][2]);
-		result[2] = (r * M[2][0]) + (g * M[2][1]) + (b * M[2][2]);
-
-		return result;
-	}
-
-	/**
-	 * Convert RGB to XYZ
-	 * 
-	 * @param RGB
-	 * @return XYZ in double array.
-	 */
-	public double[] RGBtoXYZ(int[] RGB) {
-		return RGBtoXYZ(RGB[0], RGB[1], RGB[2]);
-	}
-
-	/**
-	 * @param x
-	 * @param y
-	 * @param Y
-	 * @return XYZ values
-	 */
-	public double[] xyYtoXYZ(double x, double y, double Y) {
-		double[] result = new double[3];
-		if (y == 0) {
-			result[0] = 0;
-			result[1] = 0;
-			result[2] = 0;
-		} else {
-			result[0] = (x * Y) / y;
-			result[1] = Y;
-			result[2] = ((1 - x - y) * Y) / y;
-		}
-		return result;
-	}
-
-	/**
-	 * @param xyY
-	 * @return XYZ values
-	 */
-	public double[] xyYtoXYZ(double[] xyY) {
-		return xyYtoXYZ(xyY[0], xyY[1], xyY[2]);
-	}
-
-	/**
 	 * Convert XYZ to LAB.
 	 * 
-	 * @param X
-	 * @param Y
-	 * @param Z
+	 * @param X 0 <= X <= 95.0429
+	 * @param Y 0 <= Y <= 100
+	 * @param Z 0 <= Z <= 108.89
 	 * @return Lab values
 	 */
 	public double[] XYZtoLAB(double X, double Y, double Z) {
@@ -304,7 +152,7 @@ public class ConvertColors {
 	/**
 	 * Convert XYZ to RGB.
 	 * 
-	 * @param X
+	 * @param X 
 	 * @param Y
 	 * @param Z
 	 * @return RGB in int array.
@@ -353,9 +201,11 @@ public class ConvertColors {
 	/**
 	 * Convert XYZ to RGB
 	 * 
-	 * @param XYZ
-	 *            in a double array.
-	 * @return RGB in int array.
+	 * @param X 0 <= X <= 95.0429
+	 * @param Y 0 <= Y <= 100
+	 * @param Z 0 <= Z <= 108.89
+	 * Illuminant D65
+	 * Observer 2 deg
 	 */
 	public int[] XYZtoRGB(double[] XYZ) {
 		return XYZtoRGB(XYZ[0], XYZ[1], XYZ[2]);
@@ -402,7 +252,7 @@ public class ConvertColors {
 		return new int[] { (int) Math.round(r1 * 255), (int) Math.round(g1 * 255), (int) Math.round(b1 * 255) };
 	}
 
-	public double hue2rgb(double p, double q, double t) {
+	private double hue2rgb(double p, double q, double t) {
 		if (t < 0)
 			t += 1;
 		if (t > 1)
@@ -421,13 +271,17 @@ public class ConvertColors {
 	public int[] YUVtoRGB(double y, double u, double v) {
 		int[] result = new int[3];
 
-		int r = (int) ((y + 1.403 * v) * 256);
-		int g = (int) ((y - 0.344 * u - 0.714 * v) * 256);
-		int b = (int) ((y + 1.770 * u) * 256);
+//		int r = (int) ((y + 1.403 * v) * 256);
+//		int g = (int) ((y - 0.344 * u - 0.714 * v) * 256);
+//		int b = (int) ((y + 1.770 * u) * 256);
 
-		result[0] = r;
-		result[1] = g;
-		result[2] = b;
+		Double r = ((y + 1.28033 * v) * 255);
+		Double g = ((y - 0.21482 * u - 0.38059 * v) * 255);
+		Double b = ((y + 2.12798 * u) * 255);
+		
+		result[0] = r.intValue();
+		result[1] = g.intValue();
+		result[2] = b.intValue();
 		return result;
 	}
 
@@ -443,6 +297,9 @@ public class ConvertColors {
 		return result;
 	}
 
+	//# YIQ: used by composite video signals (linear combinations of RGB)
+	//# Y: perceived grey level (0.0 == black, 1.0 == white)
+	//# I, Q: color components
 	public int[] YIQtoRGB(double y, double i, double q) {
 		int[] result = new int[3];
 		Double r = (y + 0.948262 * i + 0.624013 * q);
@@ -476,23 +333,27 @@ public class ConvertColors {
 		int[] rgb = c.HLStoRGB(60, 0.42156862774316004, 0.1627906982546693);
 		System.out.println("hls to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
 
-		rgb = c.HLStoRGB(129, 0.67, 0.75);
-		System.out.println("hls to rgb 108,234,127: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
-
 		rgb = c.YUVtoRGB(0.475, -0.059, 0.014);
 		System.out.println("yuv to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
 
 		rgb = c.YIQtoRGB(0.475, 0.044, -0.043);
 		System.out.println("YIQ to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
 
-		rgb = c.YCbCrtoRGB(120, 113, 130);
+		rgb = c.YCbCrtoRGB(121, 110, 130);
 		System.out.println("YCbCr to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
 
 		rgb = c.LABtoRGB(51.571, -6.068, 19.147);
 		System.out.println("lab to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+		
 
-		rgb = c.XYZtoRGB(17.636525984294632, 19.765390475189697, 12.55841722902992);
+		rgb = c.LABtoRGB(100, 5, 10);
+		System.out.println("lab to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
+
+
+		rgb = c.XYZtoRGB(17.6365, 19.7653, 12.5584);
 		System.out.println("xyz to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
 
+		rgb = c.XYZtoRGB(25, 40, 10);
+		System.out.println("xyz to rgb: " + rgb[0] + "," + rgb[1] + "," + rgb[2]);
 	}
 }
