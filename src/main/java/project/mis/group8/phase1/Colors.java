@@ -176,30 +176,34 @@ public class Colors {
 		double y_range1 = two.y - one.y, y_range2 = three.y - two.y;
 		double z_range1 = two.z - one.z, z_range2 = three.z - two.z;
 
-		for (int i = 0; i <= Math.pow(2, NUMBER_OF_BITS); i++) {
-			double value = -1.0 + 2.0 * i / (Math.pow(2, NUMBER_OF_BITS));
-			value_a.add(value);			
-			if (value <= 0) {
-				int x = (int) (i / Math.pow(2, NUMBER_OF_BITS - 1) * x_range1 + min_x1);
-				int y = (int) (i / Math.pow(2, NUMBER_OF_BITS - 1) * y_range1 + min_y1);
-				int z = (int) (i / Math.pow(2, NUMBER_OF_BITS - 1) * z_range1 + min_z1);
-				color_x.add(x);
-				color_y.add(y);
-				color_z.add(z);
-			} else {
-				int j = (int) (i - Math.pow(2, NUMBER_OF_BITS - 1));
-				int x = (int) (j / Math.pow(2, NUMBER_OF_BITS - 1) * x_range2 + middle_x1);
-				int y = (int) (j / Math.pow(2, NUMBER_OF_BITS - 1) * y_range2 + middle_y1);
-				int z = (int) (j / Math.pow(2, NUMBER_OF_BITS - 1) * z_range2 + middle_z1);
-				color_x.add(x);
-				color_y.add(y);
-				color_z.add(z);
-			}
+		for (int i = 0; i < Math.pow(2, NUMBER_OF_BITS-1)-1; i++) {
+			double value = -1.0 + 1.0 * i / ((Math.pow(2, NUMBER_OF_BITS-1)-1));
+			value_a.add(value);
+	
+			int x = (int) (i / (Math.pow(2, NUMBER_OF_BITS - 1)-1) * x_range1 + min_x1);
+			int y = (int) (i / (Math.pow(2, NUMBER_OF_BITS - 1)-1) * y_range1 + min_y1);
+			int z = (int) (i / (Math.pow(2, NUMBER_OF_BITS - 1)-1) * z_range1 + min_z1);
+			color_x.add(x);
+			color_y.add(y);
+			color_z.add(z);
 		}
+		
+		for (int i = 0; i <= Math.pow(2, NUMBER_OF_BITS-1); i++) {
+			double value = 1.0 * i / (Math.pow(2, NUMBER_OF_BITS-1));
+			value_a.add(value);
+
+			int x = (int) (i / Math.pow(2, NUMBER_OF_BITS - 1) * x_range2 + middle_x1);
+			int y = (int) (i / Math.pow(2, NUMBER_OF_BITS - 1) * y_range2 + middle_y1);
+			int z = (int) (i / Math.pow(2, NUMBER_OF_BITS - 1) * z_range2 + middle_z1);
+			color_x.add(x);
+			color_y.add(y);
+			color_z.add(z);
+		}
+		
 		String f = inputOne.toString()+"_" + inputTwo.toString() + "_" + inputThree.toString();
 		String filename = String.format("colorMap/"+INPUT_COLOR_MODEL+"_"+NUMBER_OF_BITS+"_"+f+".txt");
 		WriteFile(filename,false,"ColorMAP: RGB number of bits: "+NUMBER_OF_BITS+"\n");
-		for(int i = 0;i<=Math.pow(2, NUMBER_OF_BITS);i++)
+		for(int i = 0;i<Math.pow(2, NUMBER_OF_BITS);i++)
 		{
 			WriteFile(filename,true,"ColorID:"+" "+i+"	"+color_x.get(i)+"  "+color_y.get(i)+"  "+color_z.get(i)+"\n");
 		}

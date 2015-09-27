@@ -307,9 +307,9 @@ public class ConvertColors {
 		Double r = y + 1.402 * (cr - 128);
 		Double g = y - 0.34414 * (cb - 128) - 0.71414 * (cr - 128);
 		Double b = y + 1.772 * (cb - 128);
-		result[0] = r.intValue();
-		result[1] = g.intValue();
-		result[2] = b.intValue();
+		result[0] = Math.abs(r.intValue());
+		result[1] = Math.abs(g.intValue());
+		result[2] = Math.abs(b.intValue());
 		return result;
 	}
 
