@@ -389,14 +389,14 @@ public class Colors {
 			one = t.new ColorInstance(arr[0], arr[1], arr[2]);
 
 			hue = Float.parseFloat(cn2[0]);
-			saturation = Float.parseFloat(cn2[1]);
-			luminence = Float.parseFloat(cn2[2]);
+			luminence = Float.parseFloat(cn2[1]);
+			saturation = Float.parseFloat(cn2[2]);
 			int[] arr2 = converter.HLStoRGB(hue, luminence, saturation);
 			two = t.new ColorInstance(arr2[0], arr2[1], arr2[2]);
 
 			hue = Float.parseFloat(cn3[0]);
-			saturation = Float.parseFloat(cn3[1]);
-			luminence = Float.parseFloat(cn3[2]);
+			luminence = Float.parseFloat(cn3[1]);
+			saturation = Float.parseFloat(cn3[2]);
 			int[] arr3 = converter.HLStoRGB(hue, luminence, saturation);
 			three = t.new ColorInstance(arr3[0], arr3[1], arr3[2]);
 			colorModel = COLOR_MODEL.RGB;
